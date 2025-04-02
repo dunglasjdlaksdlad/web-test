@@ -1,6 +1,12 @@
 <?php
 
+use App\Http\Controllers\Content\CDBRController;
+use App\Http\Controllers\Content\GDTTController;
+use App\Http\Controllers\Content\PAKHController;
+use App\Http\Controllers\Content\SCTDController;
+use App\Http\Controllers\Content\WOTTController;
 use App\Http\Controllers\Dashboard_And_Reports\AreaController;
+use App\Http\Controllers\Dashboard_And_Reports\FileManagerController;
 use App\Http\Controllers\User_Management\PermissionController;
 use App\Http\Controllers\User_Management\RoleController;
 use App\Http\Controllers\User_Management\UserController;
@@ -25,12 +31,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post("/users/{user}/update", [UserController::class, 'update'])->name("users.update");
     });
 
+    Route::controller(FileManagerController::class)->group(function () {
+        Route::match(['get', 'post'], '/filemanager', 'index')->name('filemanager.index');
+        Route::post('/filemanager/store', 'store')->name('filemanager.store');
+        Route::resource('/filemanager', FileManagerController::class)->except(['index', 'update', 'store', 'create']);
+    });
+
     $controllers = [
-        // 'gdtt' => GDTTController::class,
-        // 'sctd' => SCTDController::class,
-        // 'cdbr' => CDBRController::class,
-        // 'wott' => WOTTController::class,
-        // 'pakh' => PAKHController::class,
+        'gdtt' => GDTTController::class,
+        'sctd' => SCTDController::class,
+        'cdbr' => CDBRController::class,
+        'wott' => WOTTController::class,
+        'pakh' => PAKHController::class,
 
         'permissions' => PermissionController::class,
         'roles' => RoleController::class,
