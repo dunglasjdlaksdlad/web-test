@@ -10,11 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 
-type LoginForm = {
+interface LoginForm {
     email: string;
     password: string;
     remember: boolean;
-};
+    [key: string]: any;
+}
 
 interface LoginProps {
     status?: string;
@@ -22,7 +23,7 @@ interface LoginProps {
 }
 
 export default function Login({ status, canResetPassword }: LoginProps) {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<LoginForm>>({
+    const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
         remember: false,
@@ -36,14 +37,18 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
+        // <AuthLayout title="Log in to your account" description="Enter your email and password below to log in">
+        <AuthLayout>
             <Head title="Log in" />
 
-            <form className="flex flex-col gap-6" onSubmit={submit}>
+            <form className="form_login flex flex-col gap-6" onSubmit={submit}>
+                <h3>Login Here</h3>
+                {/* <form className=" flex flex-col gap-6" onSubmit={submit}> */}
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label className='label_login' htmlFor="email">Email address</Label>
                         <Input
+                            className='input_login'
                             id="email"
                             type="email"
                             required
@@ -59,14 +64,15 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                     <div className="grid gap-2">
                         <div className="flex items-center">
-                            <Label htmlFor="password">Password</Label>
-                            {canResetPassword && (
+                            <Label className='label_login' htmlFor="password">Password</Label>
+                            {/* {canResetPassword && (
                                 <TextLink href={route('password.request')} className="ml-auto text-sm" tabIndex={5}>
                                     Forgot password?
                                 </TextLink>
-                            )}
+                            )} */}
                         </div>
                         <Input
+                            className='input_login'
                             id="password"
                             type="password"
                             required
@@ -80,17 +86,11 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </div>
 
                     <div className="flex items-center space-x-3">
-                        <Checkbox
-                            id="remember"
-                            name="remember"
-                            checked={data.remember}
-                            onClick={() => setData('remember', !data.remember)}
-                            tabIndex={3}
-                        />
+                        <Checkbox id="remember" name="remember" tabIndex={3} style={{ backgroundColor: "rgba(0, 0, 0, 0.22)" }} />
                         <Label htmlFor="remember">Remember me</Label>
                     </div>
 
-                    <Button type="submit" className="mt-4 w-full" tabIndex={4} disabled={processing}>
+                    <Button type="submit" className="mt-4 w-full button_login" tabIndex={4} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Log in
                     </Button>

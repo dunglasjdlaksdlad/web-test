@@ -17,7 +17,7 @@ export interface NavGroup {
 
 export interface NavItem {
     title: string;
-    href: string;
+    url: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
 }

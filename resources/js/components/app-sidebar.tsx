@@ -10,23 +10,80 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        url: '/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'File Manager',
+        url: '/filemanager',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'TTKV',
+        url: '/areas',
         icon: LayoutGrid,
     },
 ];
 
-const footerNavItems: NavItem[] = [
+const contentNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'SỰ CỐ GĐTT',
+        url: '/gdtt',
+        icon: LayoutGrid,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
+        title: 'SỰ CỐ TD',
+        url: '/sctd',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'SỰ CỐ CDBR',
+        url: '/cdbr',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'WO_TT',
+        url: '/wott',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'WO_PAKH',
+        url: '/pakh',
+        icon: LayoutGrid,
+    },
+
+];
+
+const userManagementNavItems: NavItem[] = [
+    {
+        title: 'Role',
+        url: '/roles',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Permissions',
+        url: '/permissions',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Users',
+        url: '/users',
+        icon: LayoutGrid,
     },
 ];
+
+// const footerNavItems: NavItem[] = [
+//     {
+//         title: 'Repository',
+//         url: 'https://github.com/laravel/react-starter-kit',
+//         icon: Folder,
+//     },
+//     {
+//         title: 'Documentation',
+//         url: 'https://laravel.com/docs/starter-kits',
+//         icon: BookOpen,
+//     },
+// ];
 
 export function AppSidebar() {
     return (
@@ -44,11 +101,13 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={mainNavItems} label={'Dashboard & Reports'} />
+                <NavMain items={contentNavItems} label={'Content'} />
+                <NavMain items={userManagementNavItems} label={'User Management'} />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+                {/* <NavFooter items={footerNavItems} className="mt-auto" /> */}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
