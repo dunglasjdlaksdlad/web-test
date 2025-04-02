@@ -6,6 +6,7 @@ use App\Http\Controllers\Content\PAKHController;
 use App\Http\Controllers\Content\SCTDController;
 use App\Http\Controllers\Content\WOTTController;
 use App\Http\Controllers\Dashboard_And_Reports\AreaController;
+use App\Http\Controllers\Dashboard_And_Reports\DashboardController;
 use App\Http\Controllers\Dashboard_And_Reports\FileManagerController;
 use App\Http\Controllers\User_Management\PermissionController;
 use App\Http\Controllers\User_Management\RoleController;
@@ -19,9 +20,11 @@ Route::get('/', function () {
 // Route::redirect('/', '/dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    // Route::get('dashboard', function () {
+    //     return Inertia::render('dashboard');
+    // })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
 
     Route::controller(UserController::class)->group(function () {
         Route::match(['get', 'post'], '/users', 'index')->name('users.index');
