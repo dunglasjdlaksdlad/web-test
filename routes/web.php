@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Dashboard_And_Reports\AreaController;
+use App\Http\Controllers\User_Management\PermissionController;
+use App\Http\Controllers\User_Management\RoleController;
+use App\Http\Controllers\User_Management\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,6 +17,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    Route::controller(UserController::class)->group(function () {
+        Route::match(['get', 'post'], '/users', 'index')->name('users.index');
+        Route::resource('/users', UserController::class)->except(['index', 'update']);
+        // Route::resource('/users', UserController::class)->except("update");
+        Route::post("/users/{user}", [UserController::class, 'update_status'])->name("users.status");
+        Route::post("/users/{user}/update", [UserController::class, 'update'])->name("users.update");
+    });
+
     $controllers = [
         // 'gdtt' => GDTTController::class,
         // 'sctd' => SCTDController::class,
@@ -21,8 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // 'wott' => WOTTController::class,
         // 'pakh' => PAKHController::class,
 
-        // 'permissions' => PermissionController::class,
-        // 'roles' => RoleController::class,
+        'permissions' => PermissionController::class,
+        'roles' => RoleController::class,
         'areas' => AreaController::class,
     ];
 
