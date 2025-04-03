@@ -42,11 +42,11 @@ function Pagination<TData>({ table, total, onPageChange, from, to, name }: Pagin
       route(`${name}.index`),
       {
         method: 'post',
-        data: { per_page: value, page: 1 }, // Reset về trang 1 khi đổi page size
+        data: { per_page: value, page: 1 },
         preserveState: true,
         preserveScroll: true,
-        replace: true, // Không thay đổi URL
-        only: ['data'], // Chỉ cập nhật prop 'data'
+        replace: true, 
+        only: ['data'],
       }
     );
   };
@@ -54,7 +54,6 @@ function Pagination<TData>({ table, total, onPageChange, from, to, name }: Pagin
   return (
     <div className="flex items-center justify-between mt-6 mb-10">
       <div className="flex-1 text-sm">
-        {/* Hiển thị số hàng hiện tại */}
         Showing {from || 1} to {to || table.getState().pagination.pageSize} of {total} rows
       </div>
       <div className="flex items-center space-x-6">

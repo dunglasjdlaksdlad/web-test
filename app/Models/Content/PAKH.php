@@ -271,7 +271,7 @@ class PAKH extends Model
                     $tempBar[$ttkv]['Phạt'] = $barData['FT đơn vị OS'] + $barData['Lực lượng hiệu chỉnh'];
                     $allKeys[$key] ??= $key;
                 }
-                $tempBar[$ttkv]['QH'] = ($tempBar[$ttkv]['QH'] ?? 0) + ($tempBar[$ttkv]['Tồn QH'] ?? 0);
+                // $tempBar[$ttkv]['QH'] = ($tempBar[$ttkv]['QH'] ?? 0) + ($tempBar[$ttkv]['Tồn QH'] ?? 0);
                 $barData = array_merge($tempBar[$ttkv], $barData);
                 $tempBar[$ttkv] = $barData;
                 $chart_data['pie'] = [
@@ -312,7 +312,7 @@ class PAKH extends Model
                         $tempBar[$district]['Phạt'] = $barData['FT đơn vị OS'] + $barData['Lực lượng hiệu chỉnh'];
                         $allKeys[$key] ??= $key;
                     }
-                    $tempBar[$district]['QH'] = ($tempBar[$district]['QH'] ?? 0) + ($tempBar[$district]['Tồn QH'] ?? 0);
+                    // $tempBar[$district]['QH'] = ($tempBar[$district]['QH'] ?? 0) + ($tempBar[$district]['Tồn QH'] ?? 0);
                     $barData = array_merge($tempBar[$district], $barData);
                     $tempBar[$district] = $barData;
                     $chart_data['pie'] = [

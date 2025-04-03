@@ -47,15 +47,19 @@ function DataTableBar<TData, TValue>({
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
-
+console.log(data);
 const handleHeaderClick = (headerName: string | React.ReactNode) => {
         const headerValue = typeof headerName === 'string' ? headerName : '';
 
-        const areas = [...new Set(data.map((item: any) => item.ttkv).filter(Boolean))];
+        const areas = [...new Set(data.map((item: any) => item.ttkv1).filter(Boolean))];
         const districts = [...new Set(data.map((item: any) => item.quan).filter(Boolean))];
+        console.log(areas,districts);
 
-        router.get(route('pakh.index'), {
-            areas,
+        router.get(route('wott.index'), {
+        //    data: { areas,
+        //     districts, 
+        //     header: headerValue,}
+         areas,
             districts, 
             header: headerValue,
         }, {
@@ -74,7 +78,7 @@ const handleHeaderClick = (headerName: string | React.ReactNode) => {
                             {headerGroup.headers.map((header) => (
                                 <TableHead key={header.id}
                                 className="cursor-pointer  hover:underline"
-                                    onClick={() => header.column.columnDef.header == 'ttkv'? '' : handleHeaderClick(header.column.columnDef.header)}>
+                                    onClick={() => handleHeaderClick(header.column.columnDef.header) }>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(

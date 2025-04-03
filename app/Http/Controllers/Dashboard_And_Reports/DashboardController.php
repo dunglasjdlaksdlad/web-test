@@ -46,8 +46,8 @@ class DashboardController extends Controller
         // dd($value);
 
         // dd($value);
-        // $value['area_ids'] = ['SGN'];
-        // $value['district_ids'] = ['Quận 7', 'Quận 8'];
+        // $value['area_ids'] = ['PTO'];
+        // $value['district_ids'] = ['Quận 1', 'Quận 10'];
         // $value['district_ids'] = ['Q.07' => 'Q.07','Q.08' => 'Q.08','H.Nhà Bè'=>'H.Nhà Bè'];
         // $value['district_ids'] = ['Quận 7', 'Quận 8', 'Nhà Bè', 'Quận 11'];
         // $value['district_ids'] = ['Bình Chánh', 'Tân Bình', 'Thủ Đức', 'Quận 2', 'Gò Vấp', 'Quận 1', 'Quận 10'];
@@ -57,7 +57,7 @@ class DashboardController extends Controller
             // 'sctd' => SCTD::class,
             // 'cdbr' => CDBR::class,
             'wott' => WOTT::class,
-            'pakh' => PAKH::class
+            // 'pakh' => PAKH::class
         ];
         // dd($value['msc']);
         foreach ($mscs as $key => $msc) {

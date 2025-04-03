@@ -31,6 +31,7 @@ class PAKHController extends Controller
 
     public function index(Request $request)
     {
+        dd($request->all());
         $data = [
             'area_ids' => $request->input('areas'),
             'district_ids' => $request->input('districts'),

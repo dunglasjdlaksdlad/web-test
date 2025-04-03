@@ -40,11 +40,12 @@ type Props = {
             total: number;
         };
     };
+    filters?: { area_ids: string[]; district_ids: string[]; start_date?: string; end_date?: string; header?: string };
 };
 type AlertType = 'delete';
 const name ='wott'
 
-export default function WOTT({ data }: Data) {
+export default function WOTT({ data,filters }: Props) {
     console.log(data);
     const [openAlert, setOpenAlert] = useState(false);
     const [alertType, setAlertType] = useState<AlertType>();
@@ -188,7 +189,7 @@ export default function WOTT({ data }: Data) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="WOTT" />
             <div className="h-full rounded-xl p-4">
-                <DataTable columns={columns} data={data.data} pagination={data} name={name}/>
+                <DataTable columns={columns} data={data.data} pagination={data} name={name} initialFilters={filters}/>
                 {/* <Deferred data="data" fallback={<Loading />}>
                     <DataTable columns={columns} data={data.data} pagination={data} />
                 </Deferred> */}
