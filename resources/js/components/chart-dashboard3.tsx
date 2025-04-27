@@ -161,6 +161,105 @@ const PieChartComponent = React.memo(({ chartData, title }: { chartData: any; ti
 });
 
 // Memoize Bar Chart Component
+// const BarChartComponent = React.memo(
+//   ({
+//     chartData,
+//     title,
+//     keyTitle,
+//     isExpanded,
+//     toggleExpanded,
+//   }: {
+//     chartData: any;
+//     title: string;
+//     keyTitle: string;
+//     isExpanded: boolean;
+//     toggleExpanded: () => void;
+//   }) => {
+//     // console.log(chartData,title,keyTitle);
+//     return (
+//       <Card className="md:col-span-3">
+//         <CardHeader className="items-center pb-0 pt-4">
+//           <CardTitle className="label">{title}</CardTitle>
+//         </CardHeader>
+//         <div className="flex flex-col">
+//           <CardContent className="p-0" style={{ height: 325 }}>
+//             <ResponsiveContainer width="100%" height="100%">
+//               <BarChart
+//                 data={chartData?.barDataTable || []}
+//                 // data={filteredBarDataTable}
+//                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+//               >
+//                 <defs>
+//                   {Object.entries(chartData.allKeys).map((key: any, index: number) => (
+//                     <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
+//                       <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
+//                       <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
+//                     </linearGradient>
+//                   ))}
+//                 </defs>
+//                  {/* <defs>
+//                 {chartData?.allKeys && Object.entries(chartData.allKeys).map((key: any, index: number) => (
+//                   <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
+//                     <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
+//                     <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
+//                   </linearGradient>
+//                 ))}</defs> */}
+//                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
+//                 <XAxis dataKey="ttkv" />
+//                 <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20, }} />
+//                 {['wott','pakh'].includes(keyTitle) && (
+//                 <YAxis yAxisId="right" orientation="right" label={{ value: "Giá trị (VNĐ)", position: 'top', dy: -20, }} />
+//                 )}
+
+
+//                 <Tooltip content={renderCustomTooltip} />
+
+//                 <Legend
+//                   layout="horizontal"
+//                   align="center"
+//                   verticalAlign="top"
+//                   iconSize={10}
+//                   wrapperStyle={{ fontSize: "12px", fontWeight: "bold", marginTop: "-10px" }}
+//                 />
+//                 <ReferenceLine y={10} yAxisId="left" stroke="red" />
+//                 {Object.entries(chartData.allKeys).map((key: any, index: number) => (
+//                   <Bar
+//                     key={key[0]}
+//                     dataKey={key[0]}
+//                     // fill={COLORS[index]}
+//                     fill={`url(#color-${index})`}
+//                     radius={[8, 8, 0, 0]}
+//                     barSize={30}
+//                     yAxisId={key[1]}
+//                     stroke="#fff"
+//                     strokeWidth={2}
+//                   />
+//                 ))}
+                
+//               </BarChart>
+//             </ResponsiveContainer>
+//           </CardContent>
+//           <CardFooter className="flex flex-col items-center">
+//             <Button
+//               onClick={toggleExpanded}
+//               variant="link"
+//               className="text-amber-500 hover:underline mt-2"
+//             >
+//               {isExpanded ? "Read Less" : "Read More"}
+//             </Button>
+//           </CardFooter>
+//         </div>
+//       </Card>
+//     );
+//   },
+//   (prevProps, nextProps) => {
+//     return (
+//       prevProps.chartData === nextProps.chartData &&
+//       prevProps.isExpanded === nextProps.isExpanded
+//     );
+//   }
+// );
+
 const BarChartComponent = React.memo(
   ({
     chartData,
@@ -175,7 +274,12 @@ const BarChartComponent = React.memo(
     isExpanded: boolean;
     toggleExpanded: () => void;
   }) => {
-    // console.log(chartData,title,keyTitle);
+    console.log('BarChartComponent chartData:', chartData);
+
+    if (!chartData?.allKeys) {
+      return <div>No data available for {title}</div>;
+    }
+
     return (
       <Card className="md:col-span-3">
         <CardHeader className="items-center pb-0 pt-4">
@@ -186,7 +290,6 @@ const BarChartComponent = React.memo(
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData?.barDataTable || []}
-                // data={filteredBarDataTable}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <defs>
@@ -197,23 +300,13 @@ const BarChartComponent = React.memo(
                     </linearGradient>
                   ))}
                 </defs>
-                 {/* <defs>
-                {chartData?.allKeys && Object.entries(chartData.allKeys).map((key: any, index: number) => (
-                  <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
-                    <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
-                  </linearGradient>
-                ))}</defs> */}
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
                 <XAxis dataKey="ttkv" />
-                <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20, }} />
-                {['wott','pakh'].includes(keyTitle) && (
-                <YAxis yAxisId="right" orientation="right" label={{ value: "Giá trị (VNĐ)", position: 'top', dy: -20, }} />
+                <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20 }} />
+                {['wott', 'pakh'].includes(keyTitle) && (
+                  <YAxis yAxisId="right" orientation="right" label={{ value: "Giá trị (VNĐ)", position: 'top', dy: -20 }} />
                 )}
-
-
                 <Tooltip content={renderCustomTooltip} />
-
                 <Legend
                   layout="horizontal"
                   align="center"
@@ -226,7 +319,6 @@ const BarChartComponent = React.memo(
                   <Bar
                     key={key[0]}
                     dataKey={key[0]}
-                    // fill={COLORS[index]}
                     fill={`url(#color-${index})`}
                     radius={[8, 8, 0, 0]}
                     barSize={30}
@@ -235,7 +327,6 @@ const BarChartComponent = React.memo(
                     strokeWidth={2}
                   />
                 ))}
-                
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

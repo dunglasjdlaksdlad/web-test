@@ -146,7 +146,7 @@ class DashboardController extends Controller
         // $value['quan'] = ['Quận 1'];
         $now = now()->format('Y-m-d H:i:s');
         $mscs = [
-            // 'gdtt' => GDTT::class,
+            'gdtt' => GDTT::class,
             // 'sctd' => SCTD::class,
             // 'cdbr' => CDBR::class,
             'wott' => WOTT::class,

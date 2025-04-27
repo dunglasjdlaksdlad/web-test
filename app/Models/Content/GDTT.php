@@ -117,7 +117,7 @@ class GDTT extends Model
         //     ->toArray();
 
         // dd($daysCount, $numDays);
-
+        // dd(123);
 
         $query = self::buildMainQuery([
             'start_date' => $startDate,
@@ -302,6 +302,7 @@ class GDTT extends Model
             ],
             'barDataTable' => [],
             'allKeys' => [
+                // 'Tổng WO' => 'left',
             ]
         ];
 

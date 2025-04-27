@@ -118,7 +118,7 @@ class FileManagerController extends Controller
 
     public function store(Request $request)
     {
-        $this->startBenchmark();
+        // $this->startBenchmark();
         $now = now()->format('Y-m-d H:i:s');
         $keywords = ['tramuutiengdtt', 'bonngdtt', 'gdtt', 'sctd', 'cdbr', 'wott', 'pakh', 'qlt',];
         $jobs = [];
@@ -182,7 +182,8 @@ class FileManagerController extends Controller
             ->onQueue('high')
             ->then(fn() => Log::info('⚡ Batch started'))
             ->catch(fn() => Log::error('❌ Batch failed'))
-            ->finally(fn() => [Log::info('✅ Batch completed'), $this->endBenchmark()])
+            // ->finally(fn() => [Log::info('✅ Batch completed'), $this->endBenchmark()])
+            ->finally(fn() => [Log::info('✅ Batch completed')])
             ->dispatch();
 
         return response()->json(['message' => 'Files uploaded and processing started']);

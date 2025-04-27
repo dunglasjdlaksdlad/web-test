@@ -37,10 +37,10 @@ const name ='gdtt';
 export default function GDTT({ data,filters }: Props) {
     const [openAlert, setOpenAlert] = useState(false);
     const [alertType, setAlertType] = useState<AlertType>();
-    const [selected, setSelected] = useState<Area>();
+    const [selected, setSelected] = useState<any>();
     const [openAddSheet, setOpenAddSheet] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
-    const columns = useMemo<ColumnDef<Area>[]>(
+    const columns = useMemo<ColumnDef<any>[]>(
         () => [
             {
                 id: 'select',
