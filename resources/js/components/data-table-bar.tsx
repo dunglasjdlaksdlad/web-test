@@ -65,9 +65,9 @@ function DataTableBar<TData, TValue>({
         const timeStatus = headerValue ? [headerValue] : [];
         router.post(route(`${name}.index`), {
             filters: {
-                // 0: { id: 'ttkv', value: areas, variant: 'multiSelect', operator: 'inArray' },
-                // 1: { id: 'quan', value: districts, variant: 'multiSelect', operator: 'inArray' },
-                // 2: { id: 'thoi_diem_ket_thuc', value: filters?.time || { 0: "", 1: "" }, variant: 'date', operator: 'isBetween' },
+                0: { id: 'ttkv', value: areas, variant: 'multiSelect', operator: 'inArray' },
+                1: { id: 'quan', value: districts, variant: 'multiSelect', operator: 'inArray' },
+                2: { id: 'thoi_diem_ket_thuc', value: filters?.time || { 0: "", 1: "" }, variant: 'date', operator: 'isBetween' },
                 3: { id: 'header', value: timeStatus, variant: 'multiSelect', operator: 'inArray' },
             }
         }, {
