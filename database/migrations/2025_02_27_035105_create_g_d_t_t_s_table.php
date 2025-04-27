@@ -35,7 +35,7 @@ return new class extends Migration {
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index('thoi_gian_ket_thuc', 'gdtts_thoi_gian_ket_thuc_index');
+            $table->index('thoi_diem_ket_thuc', 'gdtts_thoi_diem_ket_thuc_index');
             $table->index('ttkv', 'gdtts_ttkv_index');
             $table->index('quan', 'gdtts_quan_index');
         });
