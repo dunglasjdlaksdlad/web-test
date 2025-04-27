@@ -197,6 +197,13 @@ const BarChartComponent = React.memo(
                     </linearGradient>
                   ))}
                 </defs>
+                 {/* <defs>
+                {chartData?.allKeys && Object.entries(chartData.allKeys).map((key: any, index: number) => (
+                  <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
+                    <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
+                  </linearGradient>
+                ))}</defs> */}
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
                 <XAxis dataKey="ttkv" />
                 <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20, }} />
@@ -228,6 +235,7 @@ const BarChartComponent = React.memo(
                     strokeWidth={2}
                   />
                 ))}
+                
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
