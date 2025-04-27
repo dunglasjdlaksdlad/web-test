@@ -43,7 +43,7 @@ export interface Area {
     id: number;
     name: string;
     name1: string;
-     name2: string;
+    name2: string;
     guard_name: string;
     created_by: string;
     created_at: string;
@@ -91,8 +91,14 @@ export type FormTypeDashboard = {
     msc: string[];
     areas: string[];
     districts: string[];
-    startDate: string;
-    endDate: string;
+    // startDate: string;
+    // endDate: string;
+    time: {
+        // startDate: string;
+        // endDate: string;
+        0: string;
+        1: string;
+    };
 };
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

@@ -8,6 +8,7 @@ use App\Http\Controllers\Content\WOTTController;
 use App\Http\Controllers\Dashboard_And_Reports\AreaController;
 use App\Http\Controllers\Dashboard_And_Reports\DashboardController;
 use App\Http\Controllers\Dashboard_And_Reports\FileManagerController;
+use App\Http\Controllers\TESTCONTROLLER;
 use App\Http\Controllers\User_Management\PermissionController;
 use App\Http\Controllers\User_Management\RoleController;
 use App\Http\Controllers\User_Management\UserController;
@@ -46,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'cdbr' => CDBRController::class,
         'wott' => WOTTController::class,
         'pakh' => PAKHController::class,
+        'test' => TESTCONTROLLER::class,
 
         'permissions' => PermissionController::class,
         'roles' => RoleController::class,

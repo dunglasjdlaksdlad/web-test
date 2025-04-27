@@ -24,26 +24,17 @@ const breadcrumbs: BreadcrumbItem[] = [
 type Props = {
     data: {
         data: any[];
-        links: {
-            first: string;
-            last: string;
-            next: string | null;
-            prev: string | null;
-        };
-        meta: {
-            current_page: number;
-            from: number;
-            last_page: number;
-            per_page: number;
-            to: number;
-            total: number;
-        };
+        links: { first: string; last: string; next: string | null; prev: string | null };
+        meta: { current_page: number; from: number; last_page: number; per_page: number; to: number; total: number };
+    };
+    filters?: {
+        [key: string]: { id: string; value: any; variant: string; operator: string };
     };
 };
 type AlertType = 'delete';
 const name ='gdtt';
 
-export default function GDTT({ data }: Data) {
+export default function GDTT({ data,filters }: Props) {
     const [openAlert, setOpenAlert] = useState(false);
     const [alertType, setAlertType] = useState<AlertType>();
     const [selected, setSelected] = useState<Area>();
@@ -66,80 +57,139 @@ export default function GDTT({ data }: Data) {
                 enableSorting: false,
                 enableHiding: false,
             },
-            {
-                header: ({ column }) => {
-                    return (
-                        <Button className='h-0'
-                            variant='link'
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            ID
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    )
-                },
-                accessorKey: "id",
-                search: true,
+             {
+                header: 'ID',
+                accessorKey: 'id',
             },
             {
-                header: "Tên CB",
-                accessorKey: "ten_canh_bao",
-                search: true,
+                header: 'Mã tủ BTS/Node',
+                accessorKey: 'ma_tu_btsnodeb',
             },
             {
                 header: "Mã trạm chuẩn",
                 accessorKey: "ma_nha_tram_chuan",
-                search: true,
             },
-            {
-                header: "Khu vực",
-                accessorKey: "khu_vuc",
-                search: true,
-            },
-            {
-                header: "Quận huyện",
-                accessorKey: "quanhuyen",
-                search: true,
-            },
-            {
-                header: "Thời gian bắt đầu",
-                accessorKey: "thoi_gian_xuat_hien_canh_bao",
-                search: true,
-            },
-            {
-                header: "Thời gian kết thúc",
-                accessorKey: "thoi_gian_ket_thuc",
-                search: true,
-            },
-            {
-                header: "Cell*h sau giảm trừ",
-                accessorKey: "cellh_sau_giam_tru",
-                search: true,
-            },
-            {
-                header: "NN mức 1",
-                accessorKey: "nn_muc_1",
-                search: true,
-            },
-            // {
-            //     header: 'Created by',
-            //     accessorKey: 'created_by',
-            //     search: true,
-            // },
-            {
-                header: ({ column }) => {
-                    return (
-                        <Button className='h-0'
-                            variant='link'
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Created at
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    )
+              {
+                header: 'Khu vực',
+                accessorKey: 'ttkv',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'GĐH', label: 'GĐH' },
+                        { value: 'SGN', label: 'SGN' },
+                    ],
                 },
-                accessorKey: "created_at",
-                search: true,
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+            {
+                header: 'Quận huyện',
+                accessorKey: 'quan',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'Quận 1', label: 'Quận 1' },
+                        { value: 'Quận 3', label: 'Quận 3' },
+                    ],
+                },
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+            {
+                header: "Thời gian xuất hiện cb",
+                accessorKey: "thoi_gian_xuat_hien_canh_bao",  meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: "Thời điểm kết thúc",
+                accessorKey: "thoi_diem_ket_thuc",  meta: {
+                    filterVariant: 'date',
+                },
+            },
+              {
+                header: "Thời gian tồn",
+                accessorKey: "thoi_gian_ton",
+            },
+              {
+                header: 'NN mức 1',
+                accessorKey: 'nn_muc_1',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'chưa rõ nguyên nhân', label: 'Chưa rõ nguyên nhân' },
+                        { value: 'truyền dẫn', label: 'Truyền dẫn' },
+                        { value: 'thiết bị', label: 'Thiết bị' },
+                        { value: 'vhkt', label: 'VHKT' },
+                        { value: 'nguồn', label: 'Nguồn' },
+                        { value: 'tác động hệ thống', label: 'Tác động hệ thống' },
+                    ],
+                },
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+             {
+                header: "Cell*h Tgt",
+                accessorKey: "cellh_truoc_giam_tru",
+            },
+             {
+                header: "Cell*h gt",
+                accessorKey: "cellh_giam_tru",
+            },
+            {
+                header: "Cell*h Sgt",
+                accessorKey: "cellh_sau_giam_tru",
+            },
+              {
+                header: "Day",
+                accessorKey: "day",
+            },
+              {
+                header: "Week",
+                accessorKey: "week",
+            },
+              {
+                header: "Month",
+                accessorKey: "month",
+            },
+              {
+                header: "Year",
+                accessorKey: "year",
+            },
+             {
+                header: 'Packed',
+                accessorKey: 'packed',
+            },
+            {
+                header: 'Created at',
+                accessorKey: 'created_at',
+                meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'Updated at',
+                accessorKey: 'updated_at', meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'Deleted at',
+                accessorKey: 'deleted_at', meta: {
+                    filterVariant: 'date',
+                },
             },
             {
                 id: 'actions',
@@ -200,13 +250,8 @@ export default function GDTT({ data }: Data) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="GDTT" />
-            <div className="h-full rounded-xl p-4">
-
-                <DataTable columns={columns} data={data.data} pagination={data} name={name}/>
-                {/* <Deferred data="data" fallback={<Loading />}>
-                    <DataTable columns={columns} data={data} />
-                </Deferred> */}
-
+              <div className="h-full rounded-xl p-4">
+                <DataTable columns={columns} data={data.data} pagination={data} name={name} initialFilters={filters} />
             </div>
         </AppLayout>
     );

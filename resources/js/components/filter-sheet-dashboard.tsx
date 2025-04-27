@@ -14,8 +14,20 @@ import { MultiSelect } from "@/components/ui/multiple-selector";
 import { useForm } from "@inertiajs/react";
 import { Filter, Loader2 } from "lucide-react";
 import { DialogProps } from "@radix-ui/react-dialog";
-import { FormEvent, useMemo } from "react";
+import { FormEvent, useMemo, useEffect, useState } from "react";
 import { FormTypeDashboard } from "@/types";
+import { createPortal } from "react-dom";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { SmartDatetimeInput } from "./ui/smart-datetime-input";
+
 
 type FilterSheetProps = {
   areas: { name: string; districts: { name: string }[] }[];
@@ -40,11 +52,23 @@ const FilterSheet = ({
     msc: [],
     areas: [],
     districts: [],
-    startDate: "",
-    endDate: "",
+    // startDate: "",
+    // endDate: "",
+    time: {
+      // startDate: "",
+      // endDate: "",
+      0: "",
+      1: "",
+    },
   });
 
-  // Memoize mappedAreas và areaDistrictsMap để tránh tính toán lại
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
   const mappedAreas = useMemo(
     () =>
       [{ name: "HCM", label: "HCM" }, ...areas].map((area) => ({
@@ -59,9 +83,9 @@ const FilterSheet = ({
       areas.flatMap((area) =>
         Array.isArray(area.districts)
           ? area.districts.map((district: any) => ({
-              value: district.name2,
-              label: district.name2,
-            }))
+            value: district.name2,
+            label: district.name2,
+          }))
           : []
       ),
     [areas]
@@ -73,15 +97,15 @@ const FilterSheet = ({
     onOpenChange?.(false);
   };
 
-  return (
-    <div className="fixed bottom-4 right-4 z-50">
+  const filterSheetContent = (
+    <div className="fixed bottom-6 right-6 z-50">
       <Sheet onOpenChange={onOpenChange} {...props}>
         <SheetTrigger asChild>
-          <Button className="w-10 h-10 rounded-full bg-blue-800 text-white shadow-lg hover:bg-blue-900 flex items-center justify-center">
-            <Filter className="w-5 h-5" />
+          <Button className="w-11 h-11 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <Filter className="w-6 h-6" />
           </Button>
         </SheetTrigger>
-        
+
         <SheetContent className="overflow-y-auto">
           <SheetHeader className="sticky top-0 bg-background z-10 pb-4">
             <SheetTitle>Filter Options</SheetTitle>
@@ -127,25 +151,44 @@ const FilterSheet = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="datetime-local"
-                value={data.startDate}
-                onChange={(e) => setData("startDate", e.target.value)}
-                className="w-full"
-              />
-            </div>
+            {/* <div className="space-y-2">
+              <Label>Date Range</Label>
+              <SmartDatetimeInput
+                mode="range"
+                value={{
+                  from: data.time[0] && !isNaN(new Date(data.time[0]).getTime()) ? new Date(data.time[0]) : undefined,
+                  to: data.time[1] && !isNaN(new Date(data.time[1]).getTime()) ? new Date(data.time[1]) : undefined,
+                }}
+                onValueChange={(value) => {
+                  if ("from" in value) {
+                    setData("time", {
+                      ...data.time,
+                      0: value.from ? value.from.toISOString() : "",
+                      1: value.to ? value.to.toISOString() : "",
+                    });
+                  }
+                }}
 
+              />
+            </div> */}
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                type="datetime-local"
-                value={data.endDate}
-                onChange={(e) => setData("endDate", e.target.value)}
-                className="w-full"
+              <Label>Date Range</Label>
+              <SmartDatetimeInput
+                mode="range"
+                value={{
+                  from: data.time[0] && !isNaN(Number(data.time[0])) ? new Date(Number(data.time[0])) : undefined,
+                  to: data.time[1] && !isNaN(Number(data.time[1])) ? new Date(Number(data.time[1])) : undefined,
+                }}
+                onValueChange={(value) => {
+                  if ("from" in value) {
+                    setData("time", {
+                      ...data.time,
+                      0: value.from ? value.from.getTime().toString() : "",
+                      1: value.to ? value.to.getTime().toString() : "",
+                    });
+                  }
+                }}
+                placeholder="e.g. from tomorrow at 3pm to next week"
               />
             </div>
 
@@ -166,6 +209,8 @@ const FilterSheet = ({
       </Sheet>
     </div>
   );
+
+  return mounted ? createPortal(filterSheetContent, document.body) : null;
 };
 
 export default FilterSheet;

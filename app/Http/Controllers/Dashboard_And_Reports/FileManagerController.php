@@ -8,11 +8,14 @@ use App\Http\Resources\fileManagerResource;
 use App\Jobs\ProcessFileJob;
 use App\Jobs\ProcessFileJob1;
 use App\Jobs\ProcessFileJob2;
+use App\Models\Content\BoNNGDTT;
 use App\Models\Content\CDBR;
 use App\Models\Content\GDTT;
 use App\Models\Content\PAKH;
 use App\Models\Content\SCTD;
+use App\Models\Content\TramUuTienGDTT;
 use App\Models\Content\WOTT;
+use App\Models\Dashboard_And_Reports\District;
 use App\Models\Dashboard_And_Reports\FileManager;
 
 use App\Models\Dashboard_And_Reports\QLT;
@@ -83,15 +86,21 @@ class FileManagerController extends Controller
         // dd(Str::slug('Thời điểm bắt đầu thực hiện (dd/MM/yyyy HH:mm:ss)', '_'));
         // dd(str::after('TTKT Hồ Chí Minh_Đội Kỹ thuật Quận 12', 'TTKT Hồ Chí Minh_Đội Kỹ thuật '));
         // dd($request->toArray());
+
+        // $kt = Carbon::parse('2025-03-14 09:05:00');
+        // $dong = Carbon::parse('2025-03-14 00:05:15');
+        // $diffInHours = $kt->diffInHours($dong, false);
+        // dd($diffInHours);
+        // dd(ceil(abs($diffInHours / 24)));
+        // $result = District::with('area')->get()->mapWithKeys(fn($district) => [
+        //     $district->name => $district->area?->name,
+        // ])->all();
+        // dd($result);
+
+
         $query = FileManager::query();
 
         $filteredDataRequest = array_diff_key($request->toArray(), ["page" => "", 'per_page' => '']);
-
-        // if ($filteredDataRequest) {
-        //     foreach ($filteredDataRequest as $key => $value) {
-        //         $query->where($key, 'like', '%' . $value . '%');
-        //     }
-        // }
 
         $perPage = $request->input('per_page', 10);
         $data = $query->orderByDesc('id')->paginate($perPage);
@@ -111,7 +120,7 @@ class FileManagerController extends Controller
     {
         $this->startBenchmark();
         $now = now()->format('Y-m-d H:i:s');
-        $keywords = ['gdtt', 'sctd', 'cdbr', 'wott', 'pakh', 'qlt'];
+        $keywords = ['tramuutiengdtt', 'bonngdtt', 'gdtt', 'sctd', 'cdbr', 'wott', 'pakh', 'qlt',];
         $jobs = [];
         $userID = auth()->id();
 
@@ -170,7 +179,7 @@ class FileManagerController extends Controller
         }
 
         Bus::batch($jobs)
-            ->onQueue('high') // Dùng queue ưu tiên cao
+            ->onQueue('high')
             ->then(fn() => Log::info('⚡ Batch started'))
             ->catch(fn() => Log::error('❌ Batch failed'))
             ->finally(fn() => [Log::info('✅ Batch completed'), $this->endBenchmark()])
@@ -188,6 +197,8 @@ class FileManagerController extends Controller
             'wott' => WOTT::class,
             'pakh' => PAKH::class,
             'qlt' => QLT::class,
+            'bonngdtt' => BoNNGDTT::class,
+            'tramuutiengdtt' => TramUuTienGDTT::class,
         ];
         $model = Arr::first(array_keys($keywords), fn($k) => Str::contains($name, $k));
         return $keywords[$model]::where('packed', $uuid)->count();

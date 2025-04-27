@@ -24,7 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import React from "react";
-import { router } from '@inertiajs/react';
+import { FormTypeDashboard } from "@/types";
 
 const COLORS = [
   '#00C49F', '#0088FE', '#FFBB28', '#FF8042',
@@ -67,21 +67,32 @@ const renderCustomShape = (props: any) => {
         outerRadius={outerRadius + 8}
         fill={fill}
       />
-      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+      {/* <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={3} fill={fill} stroke="none" />
       <text x={ex + (cos >= 0 ? 6 : -6)} y={ey} textAnchor={textAnchor} fill={fill} fontSize={10}>
         {`${payload.name}: ${value}`}
-        {/* {`${value}`} {`(${(percent * 100).toFixed(2)}%)`} */}
       </text>
-      <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
+       <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
+        {`(${(percent * 100).toFixed(2)}%)`}
+      </text> */}
+      {value > 0 && (
+        <>
+          <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+          <circle cx={ex} cy={ey} r={3} fill={fill} stroke="none" />
+          <text x={ex + (cos >= 0 ? 6 : -6)} y={ey} textAnchor={textAnchor} fill={fill} fontSize={10}>
+          {`${payload.name}: ${value}`}
+          </text>
+           <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
         {`(${(percent * 100).toFixed(2)}%)`}
       </text>
+        </>
+      )}
+     
     </g>
   );
 };
 
 const renderCustomTooltip = ({ active, payload }: any) => {
-  // console.log(payload);
   if (active && payload?.length) {
     return (
       <div className="bg-white shadow-lg rounded-md p-2 border border-gray-200 text-sm">
@@ -91,7 +102,7 @@ const renderCustomTooltip = ({ active, payload }: any) => {
           <div
             key={index}
             className="flex justify-between text-gray-600"
-            style={{ minWidth: "150px" }} // Đảm bảo đủ không gian để căn chỉnh
+            style={{ minWidth: "150px" }}
           >
             <span style={{ color: COLORS[index % COLORS.length] }}>{entry.name}:</span>
             <span className="font-semibold">{entry.value}</span>
@@ -111,17 +122,8 @@ const PieChartComponent = React.memo(({ chartData, title }: { chartData: any; ti
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="p-0 flex-1" style={{ height: 325 }}>
-        {/* <ResponsiveContainer width="100%" height="100%" aspect={16 / 10}> */}
         <ResponsiveContainer width="100%" height="100%" >
           <PieChart>
-            <defs>
-              {chartData?.pie?.map((_: any, index: number) => (
-                <linearGradient key={index} id={`pieColor${index}`} x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9} />
-                  <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.5} />
-                </linearGradient>
-              ))}
-            </defs>
             <Pie
               data={chartData?.pie || []}
               cx="50%"
@@ -137,7 +139,6 @@ const PieChartComponent = React.memo(({ chartData, title }: { chartData: any; ti
               {chartData?.pie?.map((_: any, index: number) => (
                 <Cell
                   key={`cell-${index}`}
-                  // fill={`url(#pieColor${index})`}
                   fill={COLORS[index]}
                 />
               ))}
@@ -174,7 +175,7 @@ const BarChartComponent = React.memo(
     isExpanded: boolean;
     toggleExpanded: () => void;
   }) => {
-    console.log(chartData);
+    // console.log(chartData,title,keyTitle);
     return (
       <Card className="md:col-span-3">
         <CardHeader className="items-center pb-0 pt-4">
@@ -188,10 +189,20 @@ const BarChartComponent = React.memo(
                 // data={filteredBarDataTable}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
+                <defs>
+                  {Object.entries(chartData.allKeys).map((key: any, index: number) => (
+                    <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
+                      <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
+                    </linearGradient>
+                  ))}
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
                 <XAxis dataKey="ttkv" />
                 <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20, }} />
+                {['wott','pakh'].includes(keyTitle) && (
                 <YAxis yAxisId="right" orientation="right" label={{ value: "Giá trị (VNĐ)", position: 'top', dy: -20, }} />
+                )}
 
 
                 <Tooltip content={renderCustomTooltip} />
@@ -208,10 +219,13 @@ const BarChartComponent = React.memo(
                   <Bar
                     key={key[0]}
                     dataKey={key[0]}
-                    fill={COLORS[index]}
+                    // fill={COLORS[index]}
+                    fill={`url(#color-${index})`}
                     radius={[8, 8, 0, 0]}
                     barSize={30}
                     yAxisId={key[1]}
+                    stroke="#fff"
+                    strokeWidth={2}
                   />
                 ))}
               </BarChart>
@@ -246,16 +260,17 @@ const MemoizedDataTableBar = React.memo(
   }
 );
 
-const ChartDashboard3 = ({ data ,filters}: { data: any,filters: any }) => {
-  // Trạng thái isExpanded cho từng chart
-  const [expandedStates, setExpandedStates] = useState<{ [key: string]: boolean }>({});
+interface ChartDashboard3Props {
+  data: any;
+  filters?: FormTypeDashboard; // Nhận dữ liệu bộ lọc từ FilterSheet
+}
 
-  // Trạng thái dữ liệu cho từng loại (gdtt, sctd, ...)
+const ChartDashboard3 = ({ data, filters }: ChartDashboard3Props) => {
+  const [expandedStates, setExpandedStates] = useState<{ [key: string]: boolean }>({});
   const [chartData, setChartData] = useState(data);
 
   useEffect(() => {
     setChartData(data);
-    // Khởi tạo trạng thái expanded cho từng key trong data
     const initialExpandedStates: { [key: string]: boolean } = {};
     Object.keys(data).forEach((key) => {
       initialExpandedStates[key] = false;
@@ -270,10 +285,7 @@ const ChartDashboard3 = ({ data ,filters}: { data: any,filters: any }) => {
     }));
   };
 
-
-  // if (chartData )
-  // console.log(chartData);
-
+  // console.log('chartData', chartData);
   return (
     <div className="flex flex-col gap-4">
       {Object.keys(chartData).map((key) => (
@@ -292,13 +304,14 @@ const ChartDashboard3 = ({ data ,filters}: { data: any,filters: any }) => {
             />
           </div>
 
-          {/* Data Table - Hiển thị khi mở rộng */}
+          {/* Data Table */}
           {expandedStates[key] && (
             <div className="md:col-span-4 w-full mt-4">
               <MemoizedDataTableBar
                 columns={chartData[key]?.barTable || []}
                 data={Object.values(chartData[key]?.barDataTable || {})}
-    
+                name={key}
+                filters={filters}
               />
             </div>
           )}

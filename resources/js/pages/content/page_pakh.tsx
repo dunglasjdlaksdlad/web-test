@@ -1,19 +1,15 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import ConFirmAlert from '@/components/confirm-alert';
-import DataTable from '@/components/data-table';
-import EditAreaSheet from '@/components/edit-area-sheet';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import ColumnHeader from '@/components/ui/column-header';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import AppLayout from '@/layouts/app-layout';
-import { Area, Data, type BreadcrumbItem } from '@/types';
-import { Deferred, Head, router, usePage } from '@inertiajs/react';
+
+import { Data, type BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { toast, Toaster } from 'react-hot-toast';
-import Loading from '@/components/ui/loading';
+import DataTable from '@/components/data-table';
+import AppLayout from '@/layouts/app-layout';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'PAKH',
@@ -21,22 +17,20 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-type Props = { data: Data, filters: {
-        area_ids: string[];
-        district_ids: string[];
-        start_date?: string;
-        end_date?: string;
-        header?: string;
-    } };
+type Props = {
+    data: {
+        data: any[];
+        links: { first: string; last: string; next: string | null; prev: string | null };
+        meta: { current_page: number; from: number; last_page: number; per_page: number; to: number; total: number };
+    };
+    filters?: { ttkv?: string[]; quan?: string[]; start_date?: string; end_date?: string; header?: string };
+};
 type AlertType = 'delete';
 const name = 'pakh';
 
-export default function PAKH({ data}: Data) {
-    const [openAlert, setOpenAlert] = useState(false);
-    const [alertType, setAlertType] = useState<AlertType>();
-    const [selected, setSelected] = useState<any>();
-    const [openAddSheet, setOpenAddSheet] = useState(false);
-    const [openEdit, setOpenEdit] = useState(false);
+export default function PAKH({ data, filters }: Props) {
+    console.log('PAKH data:', data, filters);
+
     const columns = useMemo<ColumnDef<any>[]>(
         () => [
             {
@@ -55,153 +49,163 @@ export default function PAKH({ data}: Data) {
                 enableHiding: false,
             },
             {
-                header: ({ column }) => {
-                    return (
-                        <Button className='h-0'
-                            variant='link'
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            ID
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    )
+                header: 'ID',
+                accessorKey: 'id',
+            },
+            {
+                header: 'Mã CV',
+                accessorKey: 'ma_cong_viec',
+            },
+            {
+                header: 'Khu vực',
+                accessorKey: 'ttkv',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'GĐH', label: 'GĐH' },
+                        { value: 'SGN', label: 'SGN' },
+                    ],
                 },
-                accessorKey: "id",
-                search: true,
-            },
-            {
-                header: "Mã CV",
-                accessorKey: "ma_cong_viec",
-                search: true,
-            },
-            {
-                header: "Khu vực",
-                accessorKey: "ttkv",
-                search: true,
-            },
-            {
-                header: "Quận huyện",
-                accessorKey: "quan",
-                search: true,
-            },
-            {
-                header: "Mã trạm",
-                accessorKey: "ma_tram",
-                search: true,
-            },
-            // {
-            //     header: "Start time",
-            //     accessorKey: "thoi_gian_bat_dau",
-            //     search: true,
-            // },
-            {
-                header: "End time",
-                accessorKey: "thoi_diem_ket_thuc",
-                search: true,
-            },
-                  {
-                header: "Thời điểm CD đóng",
-                accessorKey: "thoi_diem_cd_dong",
-                search: true,
-            },
-            {
-                header: "WO QH",
-                accessorKey: "wo_qua_han",
-                search: true,
-            },
-            {
-                header: "Packed",
-                accessorKey: "packed",
-                search: true,
-            },
-            // {
-            //     header: 'Created by',
-            //     accessorKey: 'created_by',
-            //     search: true,
-            // },
-            {
-                header: ({ column }) => {
-                    return (
-                        <Button className='h-0'
-                            variant='link'
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Created at
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    )
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
                 },
-                accessorKey: "created_at",
-                search: true,
+            },
+            {
+                header: 'Quận huyện',
+                accessorKey: 'quan',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'Quận 1', label: 'Quận 1' },
+                        { value: 'Quận 3', label: 'Quận 3' },
+                    ],
+                },
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+            {
+                header: 'Mã trạm',
+                accessorKey: 'ma_tram',
+            },
+            {
+                header: 'NV TH',
+                accessorKey: 'nhan_vien_thuc_hien',
+            },
+            {
+                header: 'TG kết thúc',
+                accessorKey: 'thoi_diem_ket_thuc',
+                meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'TĐ CD đóng',
+                accessorKey: 'thoi_diem_cd_dong',
+                meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'DG WO TH',
+                accessorKey: 'danh_gia_wo_thuc_hien',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'WO STH > 1 ngày', label: 'WO STH < 1 ngày' },
+                        { value: 'WO STH < 2 ngày', label: 'WO STH < 2 ngày' },
+                        { value: 'WO STH > 2 ngày', label: 'WO STH > 2 ngày' },
+                        { value: 'WO TH < 1 ngày', label: 'WO TH < 1 ngày' },
+                        { value: 'WO TH < 2 ngày', label: 'WO TH < 2 ngày' },
+                        { value: 'WO TH > 2 ngày', label: 'WO TH > 2 ngày' },
+                        { value: 'WO QH > 1 ngày', label: 'WO QH > 1 ngày' },
+                        { value: 'WO QH > 3 ngày', label: 'WO QH > 3 ngày' },
+                        { value: 'WO QH > 5 ngày', label: 'WO QH > 5 ngày' },
+                    ],
+                },
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+            {
+                header: 'TT WO',
+                accessorKey: 'time_status',
+                meta: {
+                    filterVariant: 'multiSelect',
+                    options: [
+                        { value: 'TH', label: 'TH' },
+                        { value: 'QH', label: 'QH' },
+                        { value: 'Tồn QH', label: 'Tồn QH' },
+                    ],
+                },
+                filterFn: (row, columnId, filterValue) => {
+                    const rowValue = row.getValue(columnId);
+                    return Array.isArray(filterValue) && filterValue.length > 0
+                        ? filterValue.includes(rowValue)
+                        : true;
+                },
+            },
+            {
+                header: 'Packed',
+                accessorKey: 'packed',
+            },
+            {
+                header: 'Created at',
+                accessorKey: 'created_at',
+                meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'Updated at',
+                accessorKey: 'updated_at', meta: {
+                    filterVariant: 'date',
+                },
+            },
+            {
+                header: 'Deleted at',
+                accessorKey: 'deleted_at', meta: {
+                    filterVariant: 'date',
+                },
             },
             {
                 id: 'actions',
-                header: ({ column }) => <ColumnHeader column={column} title="Actions" />,
+                header: 'Actions',
                 enableSorting: false,
-                cell: ({ row }) => {
-                    const area = row.original;
-                    return (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Open Menu</span>
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                {/* <DropdownMenuItem
-                                       onClick={() => {
-                                           setSelected(area);
-                                           setOpenEdit(true);
-                                       }}
-                                   >
-                                       <Edit /> Edit
-                                   </DropdownMenuItem>
-                                   <DropdownMenuItem onClick={() => presentAlert(area, 'delete')}>
-                                       <Trash2 /> Delete
-                                   </DropdownMenuItem> */}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    );
-                },
+                cell: ({ row }) => (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open Menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ),
             },
         ],
-        [],
+        []
     );
-    const presentAlert = (area: any, type: AlertType) => {
-        setSelected(area), setAlertType(type), setOpenAlert(true);
-    };
 
-    const handleDelete = () =>
-        router.delete(route('areas.destroy', selected?.id), {
-            preserveState: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('user has been deleted successfully');
-                setSelected(undefined);
-            },
-        });
-
-    const CreateButton = () => (
-        <div className="flex">
-            <Button className="ml-auto" onClick={() => setOpenAddSheet(true)}>
-                Create New
-            </Button>
-        </div>
-    );
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="PAKH" />
             <div className="h-full rounded-xl p-4">
-
-                <DataTable columns={columns} data={data.data} pagination={data} name={name} 
-                // initialFilters={filters}
-                />
-                {/* <Deferred data="data" fallback={<Loading />}>
-                </Deferred> */}
-
+                <DataTable columns={columns} data={data.data} pagination={data} name={name} initialFilters={filters} />
             </div>
+
         </AppLayout>
     );
 }

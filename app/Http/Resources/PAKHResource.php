@@ -14,18 +14,21 @@ class PAKHResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+         return [
             'id' => (string) $this->id,
             'ma_cong_viec' => $this->ma_cong_viec,
             'ttkv' => $this->ttkv,
             'quan' => $this->quan,
             'ma_tram' => $this->ma_tram,
+            'nhan_vien_thuc_hien' => $this->nhan_vien_thuc_hien,
             'thoi_diem_ket_thuc' => $this->thoi_diem_ket_thuc,
             'thoi_diem_cd_dong' => $this->thoi_diem_cd_dong,
-            'wo_qua_han' => $this->danh_gia_wo_thuc_hien,
+            'danh_gia_wo_thuc_hien' => $this->danh_gia_wo_thuc_hien,
+            'time_status'=> $this->time_status,
             'packed' => $this->packed,
             'created_at' => $this->created_at,
-            'update_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -23,10 +23,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import React from "react";
+import { router } from '@inertiajs/react';
 
 const COLORS = [
   '#00C49F', '#0088FE', '#FFBB28', '#FF8042',
   '#FF6384', '#E74C3C', '#9966FF', '#82CA9D',
+  "#4682B4", "#FFD700", "#A52A2A", "#8B4513",
 ];
 
 const renderCustomShape = (props: any) => {
@@ -66,10 +69,11 @@ const renderCustomShape = (props: any) => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={3} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} textAnchor={textAnchor} fill="#333" fontSize={12}>
+      <text x={ex + (cos >= 0 ? 6 : -6)} y={ey} textAnchor={textAnchor} fill={fill} fontSize={10}>
         {`${payload.name}: ${value}`}
+        {/* {`${value}`} {`(${(percent * 100).toFixed(2)}%)`} */}
       </text>
-      <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#999" fontSize={10}>
+      <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
         {`(${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
@@ -77,14 +81,21 @@ const renderCustomShape = (props: any) => {
 };
 
 const renderCustomTooltip = ({ active, payload }: any) => {
+  // console.log(payload);
   if (active && payload?.length) {
     return (
       <div className="bg-white shadow-lg rounded-md p-2 border border-gray-200 text-sm">
+        <p className="text-center  font-semibold text-gray-700 pb-2">{payload[0].payload.ttkv}</p>
         <p className="font-semibold text-gray-700">{payload[0].payload.name}</p>
         {payload.map((entry: any, index: number) => (
-          <p key={index} style={{ color: COLORS[index] }} className="text-gray-600">
-            {entry.name}: <span className="font-semibold">{entry.value}</span>
-          </p>
+          <div
+            key={index}
+            className="flex justify-between text-gray-600"
+            style={{ minWidth: "150px" }} // Đảm bảo đủ không gian để căn chỉnh
+          >
+            <span style={{ color: COLORS[index % COLORS.length] }}>{entry.name}:</span>
+            <span className="font-semibold">{entry.value}</span>
+          </div>
         ))}
       </div>
     );
@@ -92,272 +103,210 @@ const renderCustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
+// Memoize Pie Chart Component
+const PieChartComponent = React.memo(({ chartData, title }: { chartData: any; title: string }) => {
+  return (
+    <Card >
+      <CardHeader className="items-center pb-0 pt-4 w-full">
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0 flex-1" style={{ height: 325 }}>
+        <ResponsiveContainer width="100%" height="100%" >
+          <PieChart>
+            {/* <defs>
+              {chartData?.pie?.map((_: any, index: number) => (
+                <linearGradient key={index} id={`pieColor${index}`} x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={1} />
+                  <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.2} />
+                </linearGradient>
+              ))}
+            </defs> */}
+            <Pie
+              data={chartData?.pie || []}
+              cx="50%"
+              cy="60%"
+              innerRadius="25%"
+              outerRadius="45%"
+              dataKey="value"
+              labelLine={false}
+              label={renderCustomShape}
+              stroke="#fff"
+              strokeWidth={2}
+            >
+              {chartData?.pie?.map((_: any, index: number) => (
+                <Cell
+                  key={`cell-${index}`}
+                  // fill={`url(#pieColor${index})`}
+                  fill={COLORS[index]}
+                />
+              ))}
+            </Pie>
+            <Legend
+              layout="horizontal"
+              align="center"
+              verticalAlign="top"
+              iconSize={10}
+              wrapperStyle={{ fontSize: "12px", fontWeight: "bold", marginTop: "-10px" }}
+            />
+
+          </PieChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+}, (prevProps, nextProps) => {
+  return prevProps.chartData === nextProps.chartData;
+});
+
+// Memoize Bar Chart Component
+const BarChartComponent = React.memo(
+  ({
+    chartData,
+    title,
+    keyTitle,
+    isExpanded,
+    toggleExpanded,
+  }: {
+    chartData: any;
+    title: string;
+    keyTitle: string;
+    isExpanded: boolean;
+    toggleExpanded: () => void;
+  }) => {
+    // console.log(chartData);
+    return (
+      <Card className="md:col-span-3">
+        <CardHeader className="items-center pb-0 pt-4">
+          <CardTitle className="label">{title}</CardTitle>
+        </CardHeader>
+        <div className="flex flex-col">
+          <CardContent className="p-0" style={{ height: 325 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData?.barDataTable || []}
+                // data={filteredBarDataTable}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <defs>
+                  {Object.entries(chartData.allKeys).map((key: any, index: number) => (
+                    <linearGradient id={`color-${index}`} key={index} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={COLORS[index]} stopOpacity={1} />
+                      <stop offset="100%" stopColor={COLORS[index]} stopOpacity={0.4} />
+                    </linearGradient>
+                  ))}
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
+                <XAxis dataKey="ttkv" />
+                <YAxis yAxisId="left" label={{ value: "Số lượng", position: 'top', dy: -20, }} />
+                <YAxis yAxisId="right" orientation="right" label={{ value: "Giá trị (VNĐ)", position: 'top', dy: -20, }} />
+
+
+                <Tooltip content={renderCustomTooltip} />
+
+                <Legend
+                  layout="horizontal"
+                  align="center"
+                  verticalAlign="top"
+                  iconSize={10}
+                  wrapperStyle={{ fontSize: "12px", fontWeight: "bold", marginTop: "-10px" }}
+                />
+                <ReferenceLine y={10} yAxisId="left" stroke="red" />
+                {Object.entries(chartData.allKeys).map((key: any, index: number) => (
+                  <Bar
+                    key={key[0]}
+                    dataKey={key[0]}
+                    // fill={COLORS[index]}
+                    fill={`url(#color-${index})`}
+                    radius={[8, 8, 0, 0]}
+                    barSize={30}
+                    yAxisId={key[1]}
+                    stroke="#fff"
+                    strokeWidth={2}
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+          <CardFooter className="flex flex-col items-center">
+            <Button
+              onClick={toggleExpanded}
+              variant="link"
+              className="text-amber-500 hover:underline mt-2"
+            >
+              {isExpanded ? "Read Less" : "Read More"}
+            </Button>
+          </CardFooter>
+        </div>
+      </Card>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.chartData === nextProps.chartData &&
+      prevProps.isExpanded === nextProps.isExpanded
+    );
+  }
+);
+
+// Memoize DataTableBar
+const MemoizedDataTableBar = React.memo(
+  DataTableBar,
+  (prevProps, nextProps) => {
+    return prevProps.columns === nextProps.columns && prevProps.data === nextProps.data;
+  }
+);
+
 const ChartDashboard2 = ({ data }: { data: any }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [gdttData, setGdttData] = useState(data?.gdtt);
-  const [sctdData, setSCTDData] = useState(data?.sctd);
+  const [expandedStates, setExpandedStates] = useState<{ [key: string]: boolean }>({});
+  const [chartData, setChartData] = useState(data);
 
   useEffect(() => {
-    if (data?.gdtt) {
-      setGdttData(data.gdtt);
-      setSCTDData(data.sctd);
-    }
+    setChartData(data);
+    const initialExpandedStates: { [key: string]: boolean } = {};
+    Object.keys(data).forEach((key) => {
+      initialExpandedStates[key] = false;
+    });
+    setExpandedStates(initialExpandedStates);
   }, [data]);
 
-  // const barKeys = useMemo(() => {
-  //   if (!gdttData?.bar?.[0]) return [];
-  //   return Object.keys(gdttData.bar[0]).filter(key => key !== "name");
-  // }, [gdttData]);
-  // console.log(barKeys);
-  const barKeys = useMemo(() => {
-    if (!gdttData?.bar?.[0]) return [];
-    return Object.keys(gdttData.barDataTable[0]).filter(key => key !== "ttkv");
-  }, [gdttData]);
-  const barKeys1 = useMemo(() => {
-    if (!sctdData?.bar?.[0]) return [];
-    return Object.keys(sctdData.barDataTable[0]).filter(key => key !== "ttkv");
-  }, [sctdData]);
-  // console.log(barKeys);
+  const toggleExpanded = (key: string) => {
+    setExpandedStates((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
-  // Chiều cao cố định cho Pie Chart
-  const pieChartHeight = 325;
-
-
+  console.log('chartData', chartData);
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="grid gap-4 md:grid-cols-4">
-        {/* Pie Chart - Chiều cao cố định */}
-        <Card className="flex flex-col h-[430px]">
-          <CardHeader className="items-center pb-0 pt-4">
-            <CardTitle>Tỷ lệ GDTT</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1" style={{ height: pieChartHeight }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <defs>
-                  {gdttData?.pie?.map((_: any, index: number) => (
-                    <linearGradient key={index} id={`pieColor${index}`} x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9} />
-                      <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.5} />
-                    </linearGradient>
-                  ))}
-                </defs>
-                <Pie
-                  data={gdttData?.pie || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="30%"
-                  outerRadius="50%"
-                  dataKey="value"
-                  labelLine={false}
-                  label={renderCustomShape}
-                  stroke="#fff"
-                  strokeWidth={2}
-                >
-                  {gdttData?.pie?.map((_: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={`url(#pieColor${index})`} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+    <div className="flex flex-col gap-4">
+      {Object.keys(chartData).map((key) => (
+        <div key={key} className="mb-8">
+          <div className="grid gap-4 md:grid-cols-4 shadow-2xl rounded"  >
+            {/* Pie Chart */}
+            <PieChartComponent chartData={chartData[key]} title={`Tỷ lệ ${key.toUpperCase()}`} />
 
-        {/* Bar Chart */}
-        <Card className="md:col-span-3">
-          <CardHeader className="items-center pb-0 pt-4">
-            <CardTitle>Tỷ lệ GDTT</CardTitle>
-          </CardHeader>
-          <div className="flex flex-col">
-            {/* Phần Bar Chart với chiều cao cố định ban đầu */}
-            <CardContent className="p-0" style={{ height: pieChartHeight }}>
-
-
-
-
-
-
-
-
-
-
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={gdttData?.barDataTable || []}
-                  margin={{ top: 20, right: 30, left: -10, bottom: 5 }}
-                >
-                  <defs>
-                    {barKeys.map((_, index) => (
-                      <linearGradient key={index} id={`color${index}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9} />
-                        <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.5} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
-                  <XAxis dataKey="ttkv" />
-                  <YAxis domain={[0, 50]} />
-                  <Tooltip content={renderCustomTooltip} />
-                  <Legend />
-                  <ReferenceLine y={40} stroke="red" />
-                  {barKeys.map((key, index) => (
-                    <Bar
-                      key={key}
-                      dataKey={key}
-                      fill={`url(#color${index})`}
-                      radius={[8, 8, 0, 0]}
-                      barSize={30}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-
-
-
-
-
-
-
-
-
-
-            </CardContent>
-            <CardFooter className="flex flex-col items-center">
-              <Button
-                onClick={() => setIsExpanded(!isExpanded)}
-                variant="link"
-                className="text-amber-500 hover:underline mt-2"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </Button>
-            </CardFooter>
-          </div>
-        </Card>
-        {isExpanded && (
-          <div className="md:col-span-4 w-full">
-            <DataTableBar
-              columns={gdttData?.barTable || []}
-              data={Object.values(gdttData?.barDataTable || {})}
+            {/* Bar Chart */}
+            <BarChartComponent
+              chartData={chartData[key]}
+              title={`Tỷ lệ ${key.toUpperCase()}`}
+              keyTitle={key}
+              isExpanded={expandedStates[key] || false}
+              toggleExpanded={() => toggleExpanded(key)}
             />
           </div>
-        )}
 
-        {/* Pie Chart - Chiều cao cố định */}
-        <Card className="flex flex-col h-[430px]">
-          <CardHeader className="items-center pb-0 pt-4">
-            <CardTitle>Tỷ lệ GDTT</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex-1" style={{ height: pieChartHeight }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <defs>
-                  {sctdData?.pie?.map((_: any, index: number) => (
-                    <linearGradient key={index} id={`pieColor${index}`} x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9} />
-                      <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.5} />
-                    </linearGradient>
-                  ))}
-                </defs>
-                <Pie
-                  data={sctdData?.pie || []}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="30%"
-                  outerRadius="50%"
-                  dataKey="value"
-                  labelLine={false}
-                  label={renderCustomShape}
-                  stroke="#fff"
-                  strokeWidth={2}
-                >
-                  {sctdData?.pie?.map((_: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={`url(#pieColor${index})`} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Bar Chart */}
-        <Card className="md:col-span-3">
-          <CardHeader className="items-center pb-0 pt-4">
-            <CardTitle>Tỷ lệ GDTT</CardTitle>
-          </CardHeader>
-          <div className="flex flex-col">
-            {/* Phần Bar Chart với chiều cao cố định ban đầu */}
-            <CardContent className="p-0" style={{ height: pieChartHeight }}>
-
-
-
-
-
-
-
-
-
-
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={sctdData?.barDataTable || []}
-                  margin={{ top: 20, right: 30, left: -10, bottom: 5 }}
-                >
-                  <defs>
-                    {barKeys1.map((_, index) => (
-                      <linearGradient key={index} id={`color${index}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.9} />
-                        <stop offset="100%" stopColor={COLORS[index % COLORS.length]} stopOpacity={0.5} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} vertical={false} />
-                  <XAxis dataKey="ttkv" />
-                  <YAxis domain={[0, 50]} />
-                  <Tooltip content={renderCustomTooltip} />
-                  <Legend />
-                  <ReferenceLine y={40} stroke="red" />
-                  {barKeys1.map((key, index) => (
-                    <Bar
-                      key={key}
-                      dataKey={key}
-                      fill={`url(#color${index})`}
-                      radius={[8, 8, 0, 0]}
-                      barSize={30}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-
-
-
-
-
-
-
-
-
-
-            </CardContent>
-            <CardFooter className="flex flex-col items-center">
-              <Button
-                onClick={() => setIsExpanded(!isExpanded)}
-                variant="link"
-                className="text-amber-500 hover:underline mt-2"
-              >
-                {isExpanded ? "Read Less" : "Read More"}
-              </Button>
-            </CardFooter>
-          </div>
-        </Card>
-        {isExpanded && (
-          <div className="md:col-span-4 w-full">
-            <DataTableBar
-              columns={sctdData?.barTable || []}
-              data={Object.values(sctdData?.barDataTable || {})}
-            />
-          </div>
-        )}
-      </div>
+          {/* Data Table */}
+          {expandedStates[key] && (
+            <div className="md:col-span-4 w-full mt-4">
+              <MemoizedDataTableBar
+                columns={chartData[key]?.barTable || []}
+                data={Object.values(chartData[key]?.barDataTable || {})}
+                name={key}
+              />
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

@@ -30,8 +30,10 @@ export default function Dashboard({ areas, data }: Props) {
     const user = usePage().props.auth.user;
     const [openFilter, setOpenFilter] = useState(false);
     const [kdata, setKdata] = useState(data);
+    const [filters, setFilters] = useState<FormTypeDashboard | undefined>(undefined);
 
-    console.log(data, areas);
+ 
+    // console.log(data, areas);
 
     useEffect(() => {
         setKdata(data);
@@ -39,6 +41,8 @@ export default function Dashboard({ areas, data }: Props) {
 
     const handleFilterApply = useCallback(async (filters: FormTypeDashboard) => {
         try {
+             setFilters(filters);
+            //  console.log(filters);
             const response = await axios.get(route("dashboard.filter"), { params: filters });
             if (response.status === 200) {
                 setKdata(response.data);
@@ -56,16 +60,16 @@ export default function Dashboard({ areas, data }: Props) {
 
             <Deferred data="data" fallback={<Loading />}>
                 <div className=" container mx-auto pt-4 px-4 sm:px-4 lg:px-0">
-                    <ChartDashboard3 data={memoizedData} />
+                    <ChartDashboard3 data={memoizedData} filters={filters}/>
                 </div>
             </Deferred>
-
             <FilterSheet
                 open={openFilter}
                 onOpenChange={setOpenFilter}
                 areas={areas}
                 onFilterApply={handleFilterApply}
             />
+
         </AppLayout>
     );
 }
