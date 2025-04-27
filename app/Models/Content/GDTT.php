@@ -53,9 +53,9 @@ class GDTT extends Model
 
     static public function filterData($data, $now)
     {
-        if (!GDTT::exists()) {
-            return;
-        }
+        // if (!GDTT::exists()) {
+        //     return;
+        // }
         $minDate = GDTT::min('thoi_diem_ket_thuc');
 
         $startDate = !empty($data['time'][0])
