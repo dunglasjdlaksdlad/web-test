@@ -98,21 +98,35 @@ function DataTable<TData, TValue>({
     }); 
 
     const fetchData = (filters: Record<string, any>, page: number, perPage: number) => {
-        router.visit(
-            route(`${name}.index`),
-            {
-                method: 'post',
-                data: {
-                    filters,
-                    page,
-                    per_page: perPage,
-                },
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                only: ['data', 'pagination', 'filters'],
-            }
-        );
+        // router.visit(
+        //     route(`${name}.index`),
+        //     {
+        //         method: 'post',
+        //         data: {
+        //             filters,
+        //             page,
+        //             per_page: perPage,
+        //         },
+        //         preserveState: true,
+        //         preserveScroll: true,
+        //         replace: true,
+        //         only: ['data', 'pagination', 'filters'],
+        //     }
+        // );
+        router.get(
+        route(`${name}.index`),
+        {
+            filters,
+            page,
+            per_page: perPage,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            only: ['data', 'pagination', 'filters'],
+        }
+    );
     };
 
     const handleFiltersChange = (filters: ColumnFiltersState) => {
