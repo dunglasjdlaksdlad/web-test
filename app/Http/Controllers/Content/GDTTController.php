@@ -24,7 +24,15 @@ class GDTTController extends Controller
         // dd($phpDate->toDateTimeString());
         // dd(DB::table('1_tram_uu_tien_g_d_t_t_s')->where('ma_bts', 'HC3231')->get()->toArray());
 
-        $filters = $request->input('filters', []);
+        // $filters = $request->input('filters', []);
+        $filtersRaw = $request->input('filters', []);
+
+        if (is_string($filtersRaw)) {
+            $filters = json_decode($filtersRaw, true);
+        } else {
+            $filters = $filtersRaw;
+        }
+
         if (!empty($filters[3]['id']) && $filters[3]['id'] == 'header') {
             // $filters[3]['id'] = 'thoi_diem_ket_thuc';
             // //    $filters[3]['value'] = ???
