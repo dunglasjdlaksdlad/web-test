@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('p_a_k_h_s', function (Blueprint $table) {
 
-             $table->id();
             $table->string('uuid')->unique();
             $table->string("ma_cong_viec")->nullable();
             $table->string("ma_tram")->nullable();

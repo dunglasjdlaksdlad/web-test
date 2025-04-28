@@ -18,6 +18,21 @@ class PAKH extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        // 'uuid',
+        // 'ma_cong_viec',
+        // 'ma_tram',
+        // 'trang_thai',
+        // 'ttkv',
+        // 'quan',
+        // 'thoi_diem_bat_dau',
+        // 'thoi_diem_ket_thuc',
+        // 'thoi_diem_cd_dong',
+        // 'nhan_vien_thuc_hien',
+        // 'danh_gia_wo_thuc_hien',
+        // 'muc_do_uu_tien',
+        // 'time_status',
+        // 'phat',
+        // 'packed',
         'uuid',
         'ma_cong_viec',
         'ma_tram',
