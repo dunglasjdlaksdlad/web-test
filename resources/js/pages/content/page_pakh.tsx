@@ -1,6 +1,4 @@
-
-import { Data, type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import DataTable from '@/components/data-table';
@@ -10,11 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'PAKH',
-        href: '/pakh',
-    },
+const breadcrumbs = [
+    { title: 'WOTT', href: '/wott' },
 ];
 
 type Props = {
@@ -23,9 +18,11 @@ type Props = {
         links: { first: string; last: string; next: string | null; prev: string | null };
         meta: { current_page: number; from: number; last_page: number; per_page: number; to: number; total: number };
     };
-    filters?: { ttkv?: string[]; quan?: string[]; start_date?: string; end_date?: string; header?: string };
+    filters?: {
+        [key: string]: { id: string; value: any; variant: string; operator: string };
+    };
 };
-type AlertType = 'delete';
+
 const name = 'pakh';
 
 export default function PAKH({ data, filters }: Props) {
@@ -118,15 +115,14 @@ export default function PAKH({ data, filters }: Props) {
                 meta: {
                     filterVariant: 'multiSelect',
                     options: [
-                        { value: 'WO STH > 1 ngày', label: 'WO STH < 1 ngày' },
-                        { value: 'WO STH < 2 ngày', label: 'WO STH < 2 ngày' },
-                        { value: 'WO STH > 2 ngày', label: 'WO STH > 2 ngày' },
                         { value: 'WO TH < 1 ngày', label: 'WO TH < 1 ngày' },
                         { value: 'WO TH < 2 ngày', label: 'WO TH < 2 ngày' },
-                        { value: 'WO TH > 2 ngày', label: 'WO TH > 2 ngày' },
                         { value: 'WO QH > 1 ngày', label: 'WO QH > 1 ngày' },
                         { value: 'WO QH > 3 ngày', label: 'WO QH > 3 ngày' },
                         { value: 'WO QH > 5 ngày', label: 'WO QH > 5 ngày' },
+                        { value: 'WO STH < 1 ngày', label: 'WO STH < 1 ngày' },
+                        { value: 'WO STH < 2 ngày', label: 'WO STH < 2 ngày' },
+                        { value: 'WO STH > 2 ngày', label: 'WO STH > 2 ngày' },
                     ],
                 },
                 filterFn: (row, columnId, filterValue) => {
@@ -153,6 +149,10 @@ export default function PAKH({ data, filters }: Props) {
                         ? filterValue.includes(rowValue)
                         : true;
                 },
+            },
+             {
+                header: 'Phạt',
+                accessorKey: 'phat',
             },
             {
                 header: 'Packed',
@@ -201,7 +201,7 @@ export default function PAKH({ data, filters }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="PAKH" />
+            <Head title="WOTT" />
             <div className="h-full rounded-xl p-4">
                 <DataTable columns={columns} data={data.data} pagination={data} name={name} initialFilters={filters} />
             </div>

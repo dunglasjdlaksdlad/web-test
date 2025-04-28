@@ -20,10 +20,20 @@ class WOTTController extends Controller
     {
         // dd($request->all());
 
-        $filters = $request->input('filters', []);
+        // if (!empty($request->all())) {
+        //     dd($request->all());
+        // }
+        $filtersRaw = $request->input('filters', []);
+
+        if (is_string($filtersRaw)) {
+            $filters = json_decode($filtersRaw, true);
+        } else {
+            $filters = $filtersRaw;
+        }
         if (!empty($filters[3]['id']) && $filters[3]['id'] == 'header') {
             $filters[3]['id'] = 'time_status';
         }
+        // dd($filters);
 
         $count = -1;
         $query = DB::table('w_o_t_t_s as p');
@@ -48,7 +58,9 @@ class WOTTController extends Controller
     {
         // dd($request);
         if ($request !== null) {
-
+            // dd(
+            //     $request,
+            // );
             foreach ($request as $key => $value) {
                 // dd(
                 //     $value,

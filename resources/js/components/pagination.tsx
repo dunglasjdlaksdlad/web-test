@@ -49,24 +49,7 @@ function Pagination<TData>({ table, total, onPageChange, name }: PaginationProps
 
     const handlePageSizeChange = (value: string) => {
         table.setPageSize(Number(value));
-        router.post(
-            route(`${name}.index`),
-            {
-                per_page: value,
-                page: 1,
-                filters: table.getState().columnFilters.reduce((acc, filter) => {
-                    acc[filter.id] = filter.value;
-                    return acc;
-                }, {} as Record<string, any>),
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                only: ["data", "pagination", "filters"],
-            }
-        );
-        // router.get(
+        // router.post(
         //     route(`${name}.index`),
         //     {
         //         per_page: value,
@@ -80,9 +63,26 @@ function Pagination<TData>({ table, total, onPageChange, name }: PaginationProps
         //         preserveState: true,
         //         preserveScroll: true,
         //         replace: true,
-        //         only: ['data', 'pagination', 'filters'],
+        //         only: ["data", "pagination", "filters"],
         //     }
         // );
+        router.get(
+            route(`${name}.index`),
+            {
+                per_page: value,
+                page: 1,
+                filters: table.getState().columnFilters.reduce((acc, filter) => {
+                    acc[filter.id] = filter.value;
+                    return acc;
+                }, {} as Record<string, any>),
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['data', 'pagination', 'filters'],
+            }
+        );
     };
 
     return (

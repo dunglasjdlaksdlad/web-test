@@ -98,35 +98,56 @@ function DataTable<TData, TValue>({
     }); 
 
     const fetchData = (filters: Record<string, any>, page: number, perPage: number) => {
-        router.visit(
-            route(`${name}.index`),
-            {
-                method: 'post',
-                data: {
-                    filters,
-                    page,
-                    per_page: perPage,
-                },
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                only: ['data', 'pagination', 'filters'],
-            }
-        );
-    //     router.get(
-    //     route(`${name}.index`),
-    //     {
-    //         filters,
-    //         page,
-    //         per_page: perPage,
-    //     },
-    //     {
-    //         preserveState: true,
-    //         preserveScroll: true,
-    //         replace: true,
-    //         only: ['data', 'pagination', 'filters'],
-    //     }
-    // );
+        // router.visit(
+        //     route(`${name}.index`),
+        //     {
+        //         method: 'post',
+        //         data: {
+        //             filters,
+        //             page,
+        //             per_page: perPage,
+        //         },
+        //         preserveState: true,
+        //         preserveScroll: true,
+        //         replace: true,
+        //         only: ['data', 'pagination', 'filters'],
+        //     }
+        // );
+        // router.get(
+        //     route(`${name}.index`),
+        //     {
+        //         filters,
+        //         page,
+        //         per_page: perPage,
+        //     },
+        //     {
+        //         preserveState: true,
+        //         preserveScroll: true,
+        //         replace: true,
+        //         only: ['data', 'pagination', 'filters'],
+        //     }
+        // );
+
+        router.get(
+        route(`${name}.index`),
+        {
+            filters: JSON.stringify(filters),
+            page,
+            per_page: perPage,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            only: ['data', 'pagination', 'filters'],
+            onError: (errors) => {
+                console.error('Inertia request failed:', errors);
+            },
+            onSuccess: (page) => {
+                console.log('Response received:', page);
+            },
+        }
+    );
     };
 
     const handleFiltersChange = (filters: ColumnFiltersState) => {

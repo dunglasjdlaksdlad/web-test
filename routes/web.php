@@ -15,10 +15,10 @@ use App\Http\Controllers\User_Management\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
-// Route::redirect('/', '/dashboard');
+// Route::get('/', function () {
+//     return Inertia::render('welcome');
+// })->name('home');
+Route::redirect('/', '/dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('dashboard', function () {
@@ -56,8 +56,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     foreach ($controllers as $prefix => $controller) {
         Route::controller($controller)->group(function () use ($prefix, $controller) {
-            Route::match(['get', 'post'], "/$prefix", 'index')->name("$prefix.index");
-            Route::resource("/$prefix", $controller)->except('index');
+            // Route::match(['get', 'post'], "/$prefix", 'index')->name("$prefix.index");
+            // Route::resource("/$prefix", $controller)->except('index');
+            Route::resource("/$prefix", $controller);
         });
     }
 });
