@@ -55,27 +55,65 @@ function DataTableBar<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
     });
     console.log(name, filters, data);
+    // const handleHeaderClick = (headerName: string | React.ReactNode) => {
+
+    //     const headerValue = typeof headerName === 'string' ? headerName : '';
+
+    //     const areas = [...new Set(data.map((item: any) => item.ttkv1).filter(Boolean))];
+    //     const districts = [...new Set(data.map((item: any) => item.quan).filter(Boolean))];
+    //     console.log(areas, districts);
+
+    //     const timeStatus = headerValue ? [headerValue] : [];
+    //     router.post(route(`${name}.index`), {
+    //         filters: {
+    //             0: { id: 'ttkv', value: areas, variant: 'multiSelect', operator: 'inArray' },
+    //             1: { id: 'quan', value: districts, variant: 'multiSelect', operator: 'inArray' },
+    //             2: { id: 'thoi_diem_ket_thuc', value: filters?.time || { 0: "", 1: "" }, variant: 'date', operator: 'isBetween' },
+    //             3: { id: 'header', value: timeStatus, variant: 'multiSelect', operator: 'inArray' },
+    //         }
+    //     }, {
+    //         preserveState: false,
+    //         preserveScroll: true,
+    //         replace: true,
+    //     });
+    // };
+
     const handleHeaderClick = (headerName: string | React.ReactNode) => {
-        const headerValue = typeof headerName === 'string' ? headerName : '';
+    const headerValue = typeof headerName === 'string' ? headerName : '';
 
-        const areas = [...new Set(data.map((item: any) => item.ttkv1).filter(Boolean))];
-        const districts = [...new Set(data.map((item: any) => item.quan).filter(Boolean))];
-        console.log(areas, districts);
+    const areas = [...new Set(data.map((item: any) => item.ttkv1).filter(Boolean))];
+    const districts = [...new Set(data.map((item: any) => item.quan).filter(Boolean))];
+    console.log(areas, districts);
 
-        const timeStatus = headerValue ? [headerValue] : [];
-        router.post(route(`${name}.index`), {
-            filters: {
-                0: { id: 'ttkv', value: areas, variant: 'multiSelect', operator: 'inArray' },
-                1: { id: 'quan', value: districts, variant: 'multiSelect', operator: 'inArray' },
-                2: { id: 'thoi_diem_ket_thuc', value: filters?.time || { 0: "", 1: "" }, variant: 'date', operator: 'isBetween' },
-                3: { id: 'header', value: timeStatus, variant: 'multiSelect', operator: 'inArray' },
-            }
-        }, {
+    const timeStatus = headerValue ? [headerValue] : [];
+    const filters1 = [
+        { id: 'ttkv', value: areas, variant: 'multiSelect', operator: 'inArray' },
+        { id: 'quan', value: districts, variant: 'multiSelect', operator: 'inArray' },
+        { id: 'thoi_diem_ket_thuc', value: filters?.time || { 0: "", 1: "" }, variant: 'date', operator: 'isBetween' },
+        { id: 'header', value: timeStatus, variant: 'multiSelect', operator: 'inArray' },
+    ];
+
+    // Log the filters to verify structure
+    console.log('Filters:', filters);
+
+    router.get(
+        route(`${name}.index`),
+        {
+            filters: JSON.stringify(filters1), // Serialize filters to JSON string
+        },
+        {
             preserveState: false,
             preserveScroll: true,
             replace: true,
-        });
-    };
+            onError: (errors) => {
+                console.error('Inertia request failed:', errors);
+            },
+            onSuccess: (page) => {
+                console.log('Response received:', page);
+            },
+        }
+    );
+};
 
     return (
         <div className="shadow-2xl rounded p-5 w-full">

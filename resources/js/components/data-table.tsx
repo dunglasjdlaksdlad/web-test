@@ -129,25 +129,25 @@ function DataTable<TData, TValue>({
         // );
 
         router.get(
-        route(`${name}.index`),
-        {
-            filters: JSON.stringify(filters),
-            page,
-            per_page: perPage,
-        },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-            only: ['data', 'pagination', 'filters'],
-            onError: (errors) => {
-                console.error('Inertia request failed:', errors);
+            route(`${name}.index`),
+            {
+                filters: JSON.stringify(filters),
+                page,
+                per_page: perPage,
             },
-            onSuccess: (page) => {
-                console.log('Response received:', page);
-            },
-        }
-    );
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['data', 'pagination', 'filters'],
+                onError: (errors) => {
+                    console.error('Inertia request failed:', errors);
+                },
+                onSuccess: (page) => {
+                    console.log('Response received:', page);
+                },
+            }
+        );
     };
 
     const handleFiltersChange = (filters: ColumnFiltersState) => {
