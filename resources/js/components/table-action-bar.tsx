@@ -32,21 +32,21 @@ export default function TasksTableActionBar({ table, name }: { table: any, name:
     };
 
     const handleDelete = () => {
-        startTransition(() => {
-            router.delete(
-                route(`${name}.destroy`),
-                {
-                    data: { ids: rows.map((row: any) => row.original.id) },
-                    preserveState: true,
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        table.toggleAllRowsSelected(false);
-                        toast.success('Items deleted successfully');
-                    },
-                    onError: (errors) => toast.error(errors.message || 'Failed to delete items'),
-                }
-            );
-        });
+        // startTransition(() => {
+        router.delete(
+            route(`${name}.destroy`),
+            {
+                data: { ids: rows.map((row: any) => row.original.id) },
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    table.toggleAllRowsSelected(false);
+                    toast.success('Items deleted successfully');
+                },
+                onError: (errors) => toast.error(errors.message || 'Failed to delete items'),
+            }
+        );
+        // });
     };
 
     if (rows.length === 0) return null;

@@ -176,7 +176,7 @@ export default function Roles({ data, permissions }: Props) {
             <Head title="Roles" />
             <div className="h-full rounded-xl p-4">
 
-                <DataTable columns={columns} data={data.data} pagination={data} name={name}/>
+                <DataTable columns={columns} data={data.data} pagination={data} name={name} />
 
                 <ConFirmAlert
                     title={`Confirm ${alertType}`}

@@ -383,9 +383,9 @@ class GDTT extends Model
                             'ttkv1' => $ttkv,
                             'quan' => $district,
                         ];
-                        $barData = self::processDistrictData($districts, $district, $barData, $numDays, $chartData, $daysCount);
+                        $barData = self::processDistrictData($value, $district, $barData, $numDays, $chartData, $daysCount);
                         $tempBar[$district] = $barData;
-                        self::updatePieChartData($districts, $chartData, $barData);
+                        self::updatePieChartData($value, $chartData, $barData);
 
                     
               
@@ -403,7 +403,7 @@ class GDTT extends Model
                 foreach ($value->groupBy('month') as $key1 => $value1) {
                     foreach ($value->groupBy('day') as $key2 => $value2) {
                         $title = 'D-' . $key2 . '/' . $key1 . '/' . substr($key, -2);
-                        $barData[$title] ??= $value->sum('cellh_sau_giam_tru');
+                        $barData[$title] ??= round($value->sum('cellh_sau_giam_tru'),2);
                         $chartData['allKeys'][$title] ??= 'left';
                     }
                 }

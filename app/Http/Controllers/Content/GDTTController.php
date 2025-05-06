@@ -422,4 +422,16 @@ class GDTTController extends Controller
 
         return $filters;
     }
+
+    public function destroy(string $id)
+    {
+        dd($id);
+        $item = GDTT::find($id);
+        if ($item == null) {
+            return back();
+        }
+        $item->update(['is_active' => false]);
+        $item->delete();
+        return back();
+    }
 }

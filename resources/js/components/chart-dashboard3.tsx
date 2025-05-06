@@ -80,14 +80,14 @@ const renderCustomShape = (props: any) => {
           <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
           <circle cx={ex} cy={ey} r={3} fill={fill} stroke="none" />
           <text x={ex + (cos >= 0 ? 6 : -6)} y={ey} textAnchor={textAnchor} fill={fill} fontSize={10}>
-          {`${payload.name}: ${value}`}
+            {`${payload.name}: ${value}`}
           </text>
-           <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
-        {`(${(percent * 100).toFixed(2)}%)`}
-      </text>
+          <text x={ex + (cos >= 0 ? 4 : -4)} y={ey} dy={16} textAnchor={textAnchor} fill="#ffffff" fontSize={10}>
+            {`(${(percent * 100).toFixed(2)}%)`}
+          </text>
         </>
       )}
-     
+
     </g>
   );
 };
@@ -235,7 +235,7 @@ const PieChartComponent = React.memo(({ chartData, title }: { chartData: any; ti
 //                     strokeWidth={2}
 //                   />
 //                 ))}
-                
+
 //               </BarChart>
 //             </ResponsiveContainer>
 //           </CardContent>
@@ -391,12 +391,12 @@ const ChartDashboard3 = ({ data, filters }: ChartDashboard3Props) => {
         <div key={key} className="mb-8">
           <div className="grid gap-4 md:grid-cols-4 shadow-2xl rounded"  >
             {/* Pie Chart */}
-            <PieChartComponent chartData={chartData[key]} title={`Tỷ lệ ${key.toUpperCase()}`} />
+            <PieChartComponent chartData={chartData[key]} title={`PIE ${key.toUpperCase()}`} />
 
             {/* Bar Chart */}
             <BarChartComponent
               chartData={chartData[key]}
-              title={`Tỷ lệ ${key.toUpperCase()}`}
+              title={`BAR ${key.toUpperCase()}`}
               keyTitle={key}
               isExpanded={expandedStates[key] || false}
               toggleExpanded={() => toggleExpanded(key)}
