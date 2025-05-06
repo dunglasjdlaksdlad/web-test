@@ -32,6 +32,15 @@ const COLORS = [
   "#4682B4", "#FFD700", "#A52A2A", "#8B4513",
 ];
 
+const TITLE_MAP: Record<string, { pie: string; bar: string }> = {
+  gdtt: { pie: "SL VÀ TỶ LỆ CELL*h THEO NN GĐTT", bar: "CHI TIẾT CELL*H THEO KHU VỰC MẢNG GĐTT" },
+  sctd: { pie: "Tổng SCTĐ", bar: "Chi tiết SCTĐ" },
+  cdbr: { pie: "Tổng SCTĐ", bar: "Chi tiết SCTĐ" },
+  wott: { pie: "SL VÀ TỶ LỆ WO TH VÀ QH (WOTT)", bar: "CHI TIẾT WO VÀ GIÁ TRỊ PHẠT THEO KHU VỰC (WOTT)" },
+  pakh: { pie: "SL VÀ TỶ LỆ WO TH VÀ QH (PAKH)", bar: "CHI TIẾT WO VÀ GIÁ TRỊ PHẠT THEO KHU VỰC (PAKH)" },
+};
+
+
 const renderCustomShape = (props: any) => {
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -282,8 +291,8 @@ const BarChartComponent = React.memo(
 
     return (
       <Card className="md:col-span-3">
-        <CardHeader className="items-center pb-0 pt-4">
-          <CardTitle className="label">{title}</CardTitle>
+        <CardHeader className="items-center pb-0 pt-4 w-full">
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <div className="flex flex-col">
           <CardContent className="p-0" style={{ height: 325 }}>
@@ -391,12 +400,16 @@ const ChartDashboard3 = ({ data, filters }: ChartDashboard3Props) => {
         <div key={key} className="mb-8">
           <div className="grid gap-4 md:grid-cols-4 shadow-2xl rounded"  >
             {/* Pie Chart */}
-            <PieChartComponent chartData={chartData[key]} title={`PIE ${key.toUpperCase()}`} />
+            <PieChartComponent chartData={chartData[key]}
+              // title={`PIE ${key.toUpperCase()}`} 
+              title={TITLE_MAP[key]?.pie}
+            />
 
             {/* Bar Chart */}
             <BarChartComponent
               chartData={chartData[key]}
-              title={`BAR ${key.toUpperCase()}`}
+              // title={`BAR ${key.toUpperCase()}`}
+              title={TITLE_MAP[key]?.bar}
               keyTitle={key}
               isExpanded={expandedStates[key] || false}
               toggleExpanded={() => toggleExpanded(key)}

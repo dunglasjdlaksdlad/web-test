@@ -385,7 +385,7 @@ class GDTTController extends Controller
 
         return DB::query()->fromSub($query, 'sub')->select([
             'sub.*',
-        ])->where('sub.filter', '00');
+        ])->where('sub.filter', '00')->where('sub.deleted_at',null);
 
     }
 
@@ -423,15 +423,17 @@ class GDTTController extends Controller
         return $filters;
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        dd($id);
-        $item = GDTT::find($id);
+        // dd($request->all());
+        $item = $request->input('ids', []);
+        // $item = GDTT::find($id);
         if ($item == null) {
             return back();
         }
-        $item->update(['is_active' => false]);
-        $item->delete();
+        // $item->update(['is_active' => false]);
+        // $item->delete();
+        GDTT::whereIn('id', $item)->delete();
         return back();
     }
 }

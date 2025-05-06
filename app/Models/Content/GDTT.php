@@ -53,71 +53,72 @@ class GDTT extends Model
 
     static public function filterData($data, $now)
     {
-        // if (!GDTT::exists()) {
-        //     return;
-        // }
+
         $minDate = GDTT::min('thoi_diem_ket_thuc');
 
-        $startDate = !empty($data['time'][0])
-            ? Carbon::parse(date('Y-m-d H:i:s', $data['time'][0] / 1000))
-            : Carbon::parse(self::min('thoi_diem_ket_thuc'));
-        // : null;
-        $endDate = !empty($data['time'][1])
-            ? Carbon::parse(date('Y-m-d H:i:s', $data['time'][1] / 1000))
-            : Carbon::now()->endOfMonth();
-        // $startDate = Carbon::parse('2024-1-1');
-        // $endDate = Carbon::parse('2024-6-30');
-        $numDays = round($startDate->diffInDays($endDate) + 1, 0);
-        // dd($numDays);
-        $daysCount = [];
-        $currentDate = $startDate->copy();
+$startDate = !empty($data['time'][0])
+    ? Carbon::parse(date('Y-m-d H:i:s', $data['time'][0] / 1000))
+    : Carbon::parse(self::min('thoi_diem_ket_thuc'));
 
-        while ($currentDate->lte($endDate)) {
-            $year = $currentDate->year;
-            $month = $currentDate->month;
+$endDate = !empty($data['time'][1])
+    ? Carbon::parse(date('Y-m-d H:i:s', $data['time'][1] / 1000))
+    : Carbon::now()->endOfMonth();
 
-            if ($numDays > 7 && $numDays <= 31) {
-                $weekOfMonth = $currentDate->isoWeek() - $currentDate->copy()->startOfMonth()->isoWeek() + 1;
-                if (!isset($daysCount[$year])) {
-                    $daysCount[$year] = [];
-                }
+$today = Carbon::now();
+if ($endDate->isSameMonth($today) && $endDate->day > $today->day) {
+    $endDate = $today;
+    $startDate = $today->copy()->startOfMonth(); 
+}
 
-                if (!isset($daysCount[$year][$month])) {
-                    $daysCount[$year][$month] = [];
-                }
 
-                if (!isset($daysCount[$year][$month][$weekOfMonth])) {
-                    $daysCount[$year][$month][$weekOfMonth] = 0;
-                }
+$numDays = round($startDate->diffInDays($endDate), 0);
 
-                $daysCount[$year][$month][$weekOfMonth]++;
+$daysCount = [];
+$currentDate = $startDate->copy();
 
-            } elseif ($numDays <= 366 && $numDays >= 28) {
-                if (!isset($daysCount[$year])) {
-                    $daysCount[$year] = [];
-                }
 
-                if (!isset($daysCount[$year][$month])) {
-                    $daysCount[$year][$month] = 0;
-                }
+while ($currentDate->lte($endDate)) {
+    $year = $currentDate->year;
+    $month = $currentDate->month;
 
-                $daysCount[$year][$month]++;
-
-            } else {
-                if (!isset($daysCount[$year])) {
-                    $daysCount[$year] = 0;
-                }
-                $daysCount[$year]++;
-            }
-            $currentDate->addDay();
+    if ($numDays > 7 && $numDays <= 31) {
+        $weekOfMonth = $currentDate->isoWeek() - $currentDate->copy()->startOfMonth()->isoWeek() + 1;
+        if (!isset($daysCount[$year])) {
+            $daysCount[$year] = [];
         }
-        // $daysCount = collect(CarbonPeriod::create($startDate, $endDate))
-        //     ->groupBy(fn($date) => $date->year)
-        //     ->map(fn($group) => $group->count())
-        //     ->toArray();
+
+        if (!isset($daysCount[$year][$month])) {
+            $daysCount[$year][$month] = [];
+        }
+
+        if (!isset($daysCount[$year][$month][$weekOfMonth])) {
+            $daysCount[$year][$month][$weekOfMonth] = 0;
+        }
+
+        $daysCount[$year][$month][$weekOfMonth]++;
+
+    } elseif ($numDays <= 366 && $numDays >= 28) {
+        if (!isset($daysCount[$year])) {
+            $daysCount[$year] = [];
+        }
+
+        if (!isset($daysCount[$year][$month])) {
+            $daysCount[$year][$month] = 0;
+        }
+
+        $daysCount[$year][$month]++;
+
+    } else {
+        if (!isset($daysCount[$year])) {
+            $daysCount[$year] = 0;
+        }
+        $daysCount[$year]++;
+    }
+    $currentDate->addDay();
+}
 
         // dd($daysCount, $numDays);
-        // dd(123);
+
 
         $query = self::buildMainQuery([
             'start_date' => $startDate,
@@ -305,7 +306,7 @@ class GDTT extends Model
             ],
             'barDataTable' => [],
             'allKeys' => [
-                // 'Tổng WO' => 'left',
+                'Tổng' => 'left',
             ]
         ];
 
@@ -346,6 +347,7 @@ class GDTT extends Model
                 $barData = [
                     'ttkv' => $ttkv,
                     'ttkv1' => $ttkv,
+                    'Tổng' => round($districts->sum('cellh_sau_giam_tru') / $numDays,2),
                 ];
                 $barData = self::processDistrictData($districts, $ttkv, $barData, $numDays, $chartData, $daysCount);
                 $tempBar[$ttkv] = $barData;

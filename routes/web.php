@@ -58,7 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::controller($controller)->group(function () use ($prefix, $controller) {
             // Route::match(['get', 'post'], "/$prefix", 'index')->name("$prefix.index");
             // Route::resource("/$prefix", $controller)->except('index');
-            Route::resource("/$prefix", $controller)->except(['update']);;
+            Route::resource("/$prefix", $controller)->except(['update','destroy']);
+            Route::delete('/gdtt/destroy', [GDTTController::class, 'destroy'])->name('gdtt.destroy');
         });
     }
 });
