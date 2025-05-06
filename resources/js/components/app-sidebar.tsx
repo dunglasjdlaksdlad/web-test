@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { AlertTriangle, BookOpen, Briefcase, ClipboardList, Cpu, Files, Folder, Home, Key, LayoutGrid, Lock, Map, MapPin, Shield, Users, Wrench } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -16,12 +16,12 @@ const mainNavItems: NavItem[] = [
     {
         title: 'File Manager',
         url: '/filemanager',
-        icon: LayoutGrid,
+        icon: Files,
     },
     {
         title: 'TTKV',
         url: '/areas',
-        icon: LayoutGrid,
+        icon: MapPin,
     },
 ];
 
@@ -29,61 +29,47 @@ const contentNavItems: NavItem[] = [
     {
         title: 'SỰ CỐ GĐTT',
         url: '/gdtt',
-        icon: LayoutGrid,
+        icon: AlertTriangle,
     },
     {
         title: 'SỰ CỐ TD',
         url: '/sctd',
-        icon: LayoutGrid,
+        icon: Cpu,
     },
     {
         title: 'SỰ CỐ CDBR',
         url: '/cdbr',
-        icon: LayoutGrid,
+        icon: Wrench,
     },
     {
         title: 'WO_TT',
         url: '/wott',
-        icon: LayoutGrid,
+        icon: ClipboardList,
     },
     {
         title: 'WO_PAKH',
         url: '/pakh',
-        icon: LayoutGrid,
+        icon: Briefcase,
     },
-
 ];
 
 const userManagementNavItems: NavItem[] = [
     {
         title: 'Role',
         url: '/roles',
-        icon: LayoutGrid,
+        icon: Shield,
     },
     {
         title: 'Permissions',
         url: '/permissions',
-        icon: LayoutGrid,
+        icon: Lock,
     },
     {
         title: 'Users',
         url: '/users',
-        icon: LayoutGrid,
+        icon: Users,
     },
 ];
-
-// const footerNavItems: NavItem[] = [
-//     {
-//         title: 'Repository',
-//         url: 'https://github.com/laravel/react-starter-kit',
-//         icon: Folder,
-//     },
-//     {
-//         title: 'Documentation',
-//         url: 'https://laravel.com/docs/starter-kits',
-//         icon: BookOpen,
-//     },
-// ];
 
 export function AppSidebar() {
     return (
@@ -102,7 +88,9 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} label={'Dashboard & Reports'} />
+                <br />
                 <NavMain items={contentNavItems} label={'Content'} />
+                <br />
                 <NavMain items={userManagementNavItems} label={'User Management'} />
             </SidebarContent>
 

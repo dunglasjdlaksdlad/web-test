@@ -9,8 +9,9 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const breadcrumbs = [
-    { title: 'WOTT', href: '/wott' },
+    { title: 'PAKH', href: '/pakh' },
 ];
+
 
 type Props = {
     data: {
@@ -201,7 +202,7 @@ export default function PAKH({ data, filters }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="WOTT" />
+            <Head title="PAKH" />
             <div className="h-full rounded-xl p-4">
                 <DataTable columns={columns} data={data.data} pagination={data} name={name} initialFilters={filters} />
             </div>

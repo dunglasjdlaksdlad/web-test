@@ -82,7 +82,7 @@ class PAKH extends Model
     }
     public static function buildMainQuery(array $filters = []): Builder
     {
-        $query = DB::table('g_d_t_t_s as p')
+        $query = DB::table('p_a_k_h_s as p')
             ->when(!empty($filters['start_date']) && !empty($filters['end_date']), function ($q) use ($filters) {
                 $q->whereBetween('p.thoi_diem_ket_thuc', [
                     $filters['start_date'],

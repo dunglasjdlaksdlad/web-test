@@ -306,6 +306,7 @@ class WOTT extends Model
             }
         } else {
             foreach ($areas as $area => $districts) {
+                // dd($tempBar);
                 if (is_array($districts)) {
                     // dd(123);
                     foreach ($districts as $district) {

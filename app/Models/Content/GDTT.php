@@ -133,7 +133,6 @@ class GDTT extends Model
 
     public static function buildMainQuery(array $filters = []): Builder
     {
-
         $query = DB::table('g_d_t_t_s as p')
             ->when(!empty($filters['start_date']) && !empty($filters['end_date']), function ($q) use ($filters) {
                 $q->whereBetween('p.thoi_diem_ket_thuc', [
@@ -145,12 +144,13 @@ class GDTT extends Model
                 $q->whereIn('p.ttkv', $filters['ttkv']);
             })
             ->when(!empty($filters['quan']), function ($q) use ($filters) {
-                $q->whereIn('p.quan', $filters['quan']);
+                $q->whereIn('p.quan', District::whereIn('name2',$filters['quan'])->pluck('name'));
             });
 
 
         $query->leftJoin('1_bo_n_n_g_d_t_t_s as nn', 'nn.dau_vao', '=', 'p.nguyen_nhan')
-            ->leftJoin('1_tram_uu_tien_g_d_t_t_s as tut', 'tut.ma_bts', '=', 'p.ma_tu_btsnodeb');
+            ->leftJoin('1_tram_uu_tien_g_d_t_t_s as tut', 'tut.ma_bts', '=', 'p.ma_tu_btsnodeb')
+            ->leftJoin('districts as q', 'q.name', '=', 'p.quan');
 
         $query->select([
             DB::raw(
@@ -167,7 +167,10 @@ class GDTT extends Model
             ),
 
             'p.ttkv',
-            'p.quan',
+            // 'p.quan',
+            DB::raw("
+               q.name2 as quan
+            "),
 
             DB::raw("
                 CASE 
@@ -308,6 +311,7 @@ class GDTT extends Model
 
         $tempBar = [];
         $isDistrictFilter = isset($data['quan']);
+        // dd($isDistrictFilter);
         $areas = self::getAreas($data, $isDistrictFilter);
         // dd($areas);
         self::processFilterData($filter, $isDistrictFilter, $tempBar, $chartData, $areas, $numDays, $daysCount);
@@ -334,6 +338,7 @@ class GDTT extends Model
 
     private static function processFilterData($filter, bool $isDistrictFilter, array &$tempBar, array &$chartData, $areas, $numDays, $daysCount): void
     {
+        // dd(!$isDistrictFilter);
         if (!$isDistrictFilter) {
             $chartData['barTable'] = [['accessorKey' => 'ttkv1', 'header' => 'TTKV']];
             foreach ($filter as $ttkv => $districts) {
@@ -347,6 +352,7 @@ class GDTT extends Model
                 self::updatePieChartData($districts, $chartData, $barData);
             }
         } else {
+            // dd(123);
             $chartData['barTable'] = [
                 [
                     'accessorKey' => 'ttkv1',
@@ -357,37 +363,32 @@ class GDTT extends Model
                     'header' => 'Quận',
                 ]
             ];
+            // dd($filter);
             foreach ($filter as $ttkv => $districts) {
-                // dd($areas);
+                // dd($areas,$filter , $ttkv , $districts);
                 if (!is_array($areas[$ttkv])) {
-                    $barData = [
-                        'ttkv' => $ttkv,
-                        'ttkv1' => $ttkv,
-                        'quan' => null,
-                        'Phạt' => 0,
-                        'Tổng WO' => 0,
-                        'TH' => 0,
-                        'QH' => 0,
-                        'Tồn QH' => 0,
-                    ];
-                    $barData = self::processDistrictData($districts, $ttkv, $barData, $numDays);
-                    $tempBar[$ttkv] = $barData;
-                    self::updatePieChartData($chartData, $barData);
+                     $barData = [
+                    'ttkv' => $ttkv,
+                    'ttkv1' => $ttkv,
+                    'quan' => null,
+                ];
+                $barData = self::processDistrictData($districts, $ttkv, $barData, $numDays, $chartData, $daysCount);
+                $tempBar[$ttkv] = $barData;
+                self::updatePieChartData($districts, $chartData, $barData);
                 } else {
                     foreach ($districts->groupBy('quan') as $district => $value) {
+                        // dd($districts,$districts->groupBy('quan') , $district , $value);
                         $barData = [
                             'ttkv' => $district,
                             'ttkv1' => $ttkv,
                             'quan' => $district,
-                            'Phạt' => 0,
-                            'Tổng WO' => 0,
-                            'TH' => 0,
-                            'QH' => 0,
-                            'Tồn QH' => 0,
                         ];
-                        $barData = self::processDistrictData($value, $district, $barData, $numDays);
+                        $barData = self::processDistrictData($districts, $district, $barData, $numDays, $chartData, $daysCount);
                         $tempBar[$district] = $barData;
-                        self::updatePieChartData($chartData, $barData);
+                        self::updatePieChartData($districts, $chartData, $barData);
+
+                    
+              
                     }
                 }
             }
@@ -423,6 +424,8 @@ class GDTT extends Model
                     // dd($key1, $key);
                     $title = 'M-' . $key1 . '/' . substr($key, -2);
                     $barData[$title] ??= round($value->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1], 2);
+                    // $barData[$title] ??= $value->sum('cellh_sau_giam_tru');
+                    // $barData[$title] ??= $value->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1];
                     $chartData['allKeys'][$title] ??= 'left';
                 }
             }
@@ -442,6 +445,7 @@ class GDTT extends Model
     private static function updatePieChartData($districts, array &$chartData, array $barData): void
     {
         foreach ($districts->groupBy('nn_muc_1') as $key => $value) {
+            // dd($districts,$districts->groupBy('nn_muc_1') , $key , $value);
             $chartData['pie'][$key]['value'] += $value->sum('cellh_sau_giam_tru');
         }
     }
@@ -463,15 +467,19 @@ class GDTT extends Model
                     ? array_replace($init, $tempBar[$ttkv])
                     : array_merge($init, ['ttkv' => $ttkv, 'ttkv1' => $ttkv]);
             }
+            // dd($barDataTable);
         } else {
             foreach ($areas as $area => $districts) {
                 if (is_array($districts)) {
-                    // dd(123);
+                    // dd($areas,$area,$districts,$init);
                     foreach ($districts as $district) {
+                        // dd($tempBar);
+                        // dd(($tempBar[$district]));
                         $barDataTable[] = isset($tempBar[$district])
                             ? array_replace($init, $tempBar[$district])
                             : array_merge($init, ['ttkv' => $district, 'quan' => $district, 'ttkv1' => $area]);
                     }
+                    // dd($barDataTable);
                 } else {
                     $barDataTable[] = isset($tempBar[$area])
                         ? array_replace($init, $tempBar[$area])
@@ -488,13 +496,18 @@ class GDTT extends Model
             'tác động hệ thống' => 'TĐHT',
             'chưa rõ nguyên nhân' => 'CRNN',
         ];
-
+        // dd($chartData['pie'],array_map(fn($item) => [
+        //     ...$item,
+        //     'name' => $nameMap[$item['name']] ?? $item['name'],
+        //     'value' => $item['value'] / $numDays,
+        // ], $chartData['pie']),$numDays);
         $chartData['pie'] = array_values(array_map(fn($item) => [
             ...$item,
             'name' => $nameMap[$item['name']] ?? $item['name'],
-            'value' => round($item['value'] / $numDays, 2),
+            'value' => round($item['value'] / $numDays, 4),
+                // 'value' => $item['value'] / $numDays,
         ], $chartData['pie']));
-
+        // dd($chartData)
         $chartData['barDataTable'] = array_values($barDataTable);
         // dd($chartData);
         return $chartData;

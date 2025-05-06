@@ -45,10 +45,11 @@ class PAKHController extends Controller
             $query = self::applyFilters($query, $filters, $count);
         }
         // dd($query->limit(19)->toArray());
+        // dd($quer)
         $perPage = $request->input('per_page', 10);
         $paginatedData = $query->orderByDesc('id')->paginate($perPage);
 
-        return Inertia::render('content/page_wott', [
+        return Inertia::render('content/page_pakh', [
             'data' => WOTTResource::collection($paginatedData),
             // 'filters' => $request->input('filters'),
             'filters' => $filters,
@@ -65,6 +66,8 @@ class PAKHController extends Controller
             foreach ($request as $key => $value) {
                 // dd(
                 //     $value,
+                //     $request,
+                //     $key
                 // );
                 if ($count >= 0 && $key < $count) {
                     continue;

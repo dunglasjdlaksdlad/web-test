@@ -58,7 +58,7 @@ function DataTable<TData, TValue>({
         // })) as ExtendedColumnFilter<TData>[];
         return Object.values(initialFilters);
     });
-    console.log('columnFilters',columnFilters);
+    console.log('columnFilters', columnFilters);
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         permission: false,
@@ -95,7 +95,7 @@ function DataTable<TData, TValue>({
         onColumnFiltersChange: setColumnFilters,
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
-    }); 
+    });
 
     const fetchData = (filters: Record<string, any>, page: number, perPage: number) => {
         // router.visit(
@@ -155,11 +155,21 @@ function DataTable<TData, TValue>({
         fetchData(filters, 1, pagination.meta.per_page);
     };
 
+    // const handlePageChange = (page: number) => {
+    //     fetchData(columnFilters, page + 1, pagination.meta.per_page);
+    // };
+
+    //     console.log('data',data);
+
     const handlePageChange = (page: number) => {
         fetchData(columnFilters, page + 1, pagination.meta.per_page);
     };
 
-        console.log('data',data);
+    const handlePageSizeChange = (value: string) => {
+        const newPageSize = Number(value);
+        table.setPageSize(newPageSize);
+        fetchData(columnFilters, 1, newPageSize);
+    };
 
     return (
         <>
@@ -199,8 +209,8 @@ function DataTable<TData, TValue>({
                                     <TableHead key={header.id}>
                                         {header.isPlaceholder ? null : (
                                             <div
-                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                                onClick={header.column.getToggleSortingHandler()}
+                                            // className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                            // onClick={header.column.getToggleSortingHandler()}
                                             >
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                             </div>
@@ -216,7 +226,7 @@ function DataTable<TData, TValue>({
                                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}
-                                         className={(cell.row.original as any)?.count < 1 ? "line-through text-gray-300" : ""}
+                                            className={(cell.row.original as any)?.count < 1 ? "line-through text-gray-300" : ""}
                                         >
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
@@ -231,7 +241,15 @@ function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <Pagination table={table} total={pagination.meta.total} onPageChange={handlePageChange} name={name} />
+            {/* <Pagination table={table} total={pagination.meta.total} onPageChange={handlePageChange} name={name} /> */}
+            <Pagination
+                table={table}
+                total={pagination.meta.total}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                name={name}
+                pagination={pagination}
+            />
         </>
     );
 }

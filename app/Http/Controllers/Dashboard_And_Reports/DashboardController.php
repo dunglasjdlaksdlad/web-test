@@ -142,15 +142,15 @@ class DashboardController extends Controller
             'time' => $request->input('time'),
         ];
 
-        // $value['ttkv'] = ['SGN', 'GĐH'];
-        // $value['quan'] = ['Quận 1'];
+        // $value['ttkv'] = ['PTO'];
+        // $value['quan'] = ['Quận 11','Quận Tân Bình','Quận Tân Phú'];
         $now = now()->format('Y-m-d H:i:s');
         $mscs = [
             'gdtt' => GDTT::class,
             // 'sctd' => SCTD::class,
             // 'cdbr' => CDBR::class,
             'wott' => WOTT::class,
-            // 'pakh' => PAKH::class
+            'pakh' => PAKH::class
         ];
         foreach ($mscs as $key => $msc) {
             if ($value['msc'] == null || in_array(strtoupper($key), $value['msc'])) {
