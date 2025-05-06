@@ -403,7 +403,7 @@ class GDTT extends Model
                 foreach ($value->groupBy('month') as $key1 => $value1) {
                     foreach ($value->groupBy('day') as $key2 => $value2) {
                         $title = 'D-' . $key2 . '/' . $key1 . '/' . substr($key, -2);
-                        $barData[$title] ??= round($value->sum('cellh_sau_giam_tru'),2);
+                        $barData[$title] ??= round($value2->sum('cellh_sau_giam_tru'),2);
                         $chartData['allKeys'][$title] ??= 'left';
                     }
                 }
@@ -413,7 +413,7 @@ class GDTT extends Model
                 foreach ($value->groupBy('month') as $key1 => $value1) {
                     foreach ($value1->groupBy('week') as $key2 => $value2) {
                         $title = 'W-' . $key2 . '/' . $key1 . '/' . substr($key, -2);
-                        $barData[$title] ??= round($value->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1][$key2], 2);
+                        $barData[$title] ??= round($value2->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1][$key2], 2);
                         $chartData['allKeys'][$title] ??= 'left';
                     }
                 }
@@ -423,7 +423,7 @@ class GDTT extends Model
                 foreach ($value->groupBy('month') as $key1 => $value1) {
                     // dd($key1, $key);
                     $title = 'M-' . $key1 . '/' . substr($key, -2);
-                    $barData[$title] ??= round($value->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1], 2);
+                    $barData[$title] ??= round($value1->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1], 2);
                     // $barData[$title] ??= $value->sum('cellh_sau_giam_tru');
                     // $barData[$title] ??= $value->sum('cellh_sau_giam_tru') / $daysCount[$key][$key1];
                     $chartData['allKeys'][$title] ??= 'left';
